@@ -1,0 +1,321 @@
+\documentclass{cs-dipl}
+
+\hypersetup{pdftitle=Automatická konstrukce modelů}
+\hypersetup{pdfauthor=Radek Miček}
+
+\usepackage{bookmark}
+
+\bibliography{dipl}
+
+\DeclareMathOperator{\arity}{arita}
+%\def\arita{\operatorname{\mathtt{arita}}}
+
+\newcommand\comdots{, \ldots,}
+\newcommand\timdots{\times \cdots \times}
+
+\newglossaryentry{nat}
+{
+  name={\ensuremath{\mathbb{N}}},
+  description={množina přirozených čísel, tj. $\{ 1, 2, 3, \ldots \}$},
+  sort=nat
+}
+\newcommand\nat{\gls{nat}}
+
+\newglossaryentry{nat0}
+{
+  name={\ensuremath{\mathbb{N}_0}},
+  description={množina nezáporných celých čísel, tj. $\{ 0, 1, 2, \ldots \}$},
+  sort=nat0
+}
+\def\nat0{\gls{nat0}}
+
+\newglossaryentry{sorts}
+{
+  name={\ensuremath{\mathcal{S}}},
+  description={množina sort},
+  sort=Sset
+}
+\newcommand\sorts{\gls{sorts}}
+
+\newglossaryentry{funcs}
+{
+  name={\ensuremath{\mathcal{F}}},
+  description={množina funkčních symbolů},
+  sort=Fset
+}
+\newcommand\funcs{\gls{funcs}}
+
+\newglossaryentry{preds}
+{
+  name={\ensuremath{\mathcal{P}}},
+  description={množina predikátových symbolů},
+  sort=Pset
+}
+\newcommand\preds{\gls{preds}}
+
+\newglossaryentry{vars}
+{
+  name={\ensuremath{\mathcal{X}}},
+  description={množina proměnných},
+  sort=Xset
+}
+\newcommand\vars{\gls{vars}}
+
+\newglossaryentry{interp}
+{
+  name={\ensuremath{\mathcal{I}}},
+  description={interpretace},
+  sort=I
+}
+\newcommand\interp{{\gls{interp}}}
+
+\newglossaryentry{sort}
+{
+  name={\ensuremath{S}},
+  description={sorta},
+  sort=S
+}
+\newcommand\sort{{\gls{sort}}}
+
+\newglossaryentry{var}
+{
+  name={\ensuremath{x, y, z}},
+  description={proměnné},
+  sort=x
+}
+\newcommand\var{{\glsdisp{var}{\ensuremath{x}}}}
+\newcommand\varY{{\glsdisp{var}{\ensuremath{y}}}}
+\newcommand\varZ{{\glsdisp{var}{\ensuremath{z}}}}
+
+\newglossaryentry{func}
+{
+  name={\ensuremath{f}},
+  description={funkční symbol},
+  sort=f
+}
+\newcommand\func{{\gls{func}}}
+
+\newglossaryentry{pred}
+{
+  name={\ensuremath{P}},
+  description={predikátový symbol},
+  sort=P
+}
+\newcommand\pred{{\gls{pred}}}
+
+\newglossaryentry{term}
+{
+  name={\ensuremath{s, t}},
+  description={termy},
+  sort=t
+}
+\newcommand\term{{\glsdisp{term}{\ensuremath{t}}}}
+\newcommand\termS{{\glsdisp{term}{\ensuremath{s}}}}
+
+\newglossaryentry{atom}
+{
+  name={\ensuremath{A}},
+  description={atom},
+  sort=A
+}
+\newcommand\atom{{\gls{atom}}}
+
+\newglossaryentry{lit}
+{
+  name={\ensuremath{L}},
+  description={literál},
+  sort=L
+}
+\newcommand\lit{{\gls{lit}}}
+
+\newglossaryentry{clause}
+{
+  name={\ensuremath{C}},
+  description={klauzule},
+  sort=C
+}
+\newcommand\clause{{\gls{clause}}}
+
+\newglossaryentry{clauses}
+{
+  name={\ensuremath{N}},
+  description={množina klauzulí},
+  sort=N
+}
+\newcommand\clauses{{\gls{clauses}}}
+
+
+\begin{document}
+
+\renewcommand\thepage{Titulni strana}
+\bookmark[page=1,level=0]{Titulní strana}
+\pagestyle{empty}
+
+\begin{center}
+
+\large
+\vspace*{5mm}
+
+Univerzita Karlova v Praze
+
+\vspace{1mm}
+
+Matematicko-fyzikální fakulta
+
+\vspace{5mm}
+
+{\Large\bf DIPLOMOVÁ PRÁCE}
+
+\vspace{10mm}
+
+% Logo MFF.
+\includegraphics[scale=0.4]{logo.eps}
+
+\vspace{15mm}
+
+{\Large Radek Miček}
+
+\vspace{5mm}
+{\LARGE\bf Automatická konstrukce modelů}
+
+\vspace{5mm}
+Katedra algebry
+
+\vspace{15mm}
+
+\begin{tabular}{rl}
+Vedoucí diplomové práce: & doc. RNDr. David Stanovský, Ph.D.\\
+\noalign{\vspace{8mm}}
+Studijní program:        & Informatika \\
+\noalign{\vspace{3mm}}
+Studijní obor:           & Teoretická informatika\\
+\end{tabular}
+
+\vspace{26mm}
+
+Praha, 2015
+\end{center}
+
+\normalsize
+
+\newpage
+
+\renewcommand\thepage{Podekovani}
+\bookmark[page=2,level=0]{Poděkování}
+
+\vspace*{10mm}
+
+\noindent
+Děkuji panu doc. RNDr. Davidu Stanovskému, Ph.D., vedoucímu mé diplomové
+práce, za téma i nápady, jenž mi věnoval.
+
+\vfill
+
+\newpage
+
+\renewcommand\thepage{Cestne prohlaseni}
+\bookmark[page=3,level=0]{Čestné prohlášení}
+
+% Cestne prohlaseni (okopirovano ze sablony Martina Marese).
+
+\vglue 0pt plus 1fill
+
+\noindent
+Prohlašuji, že jsem tuto diplomovou práci vypracoval samostatně a výhradně
+s~použitím citovaných pramenů, literatury a dalších odborných zdrojů.
+
+\medskip\noindent
+Beru na~vědomí, že se na moji práci vztahují práva a povinnosti vyplývající
+ze zákona č. 121/2000 Sb., autorského zákona v~platném znění, zejména
+skutečnost, že Univerzita Karlova v Praze má právo na~uzavření licenční
+smlouvy o~užití této práce jako školního díla podle §60 odst. 1 autorského
+zákona.
+
+\vspace{10mm}
+
+\hbox{\hbox to 0.65\hsize{%
+V ..................... dne .....................
+\hss}\hbox to 0.35\hsize{%
+Podpis autora
+\hss}}
+
+\vspace{20mm}
+
+\newpage
+
+\renewcommand\thepage{Abstrakt}
+\bookmark[page=4,level=0]{Abstrakt}
+
+\noindent
+Název práce: Automatická konstrukce modelů\\
+Autor: Radek Miček\\
+Katedra: Katedra algebry\\
+Vedoucí diplomové práce: doc. RNDr. David Stanovský, Ph.D., Katedra algebry
+
+\vskip2\bigskipamount
+
+\noindent Abstrakt:
+TODO
+
+\bigskip
+
+\noindent Klíčová slova: TODO
+
+\vskip8\bigskipamount
+
+\noindent
+Title: Automated model building\\
+Author: Radek Miček\\
+Department: Department of Algebra\\
+Supervisor: doc. RNDr. David Stanovský, Ph.D., Department of Algebra
+
+\vskip2\bigskipamount
+
+\noindent Abstract:
+TODO
+
+\bigskip
+
+\noindent Keywords: TODO
+
+\newpage
+
+\renewcommand\thepage{Obsah}
+\bookmark[page=5,level=0]{Obsah}
+
+% Misto \tableofcontents - v obsahu nebude polozka obsah.
+\chapter*{Obsah}
+\makeatletter
+\@starttoc{toc}
+\makeatother
+
+\pagestyle{plain}
+\thispagestyle{empty}
+
+\newpage
+
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\theoremstyle{sdefinition}
+\newtheorem{defn}{Definice}[chapter]
+
+\theoremstyle{sdefinition}
+\newtheorem{note}{Poznámka}[chapter]
+
+\theoremstyle{sdefinition}
+\newtheorem{example}{Příklad}[chapter]
+
+\theoremstyle{stheorem}
+\newtheorem{thm}{Tvrzení}[chapter]
+
+\printglossary[title={Značení},style=notationstyle]
+
+\input{01_uvod}
+\input{02_definice}
+
+\renewcommand\bibname{Seznam použité literatury}
+
+\printbibliography[heading=bibintoc]
+
+\end{document}

@@ -1,0 +1,43 @@
+\chapter{Úvod}
+
+Cílem této práce je implementovat program pro hledání konečných
+modelů v~klasické logice prvního řádu s rovností.
+Bohatost logiky prvního řádu hraje důležitou roli při modelování
+praktických problémů.
+Díky ní se hledače modelů mohou uplatnit nejen při výzkumu
+matematických struktur, ale i při verifikaci softwaru a hardwaru,
+jako součást běhových prostředí deklarativních programovacích jazyků
+anebo v jiných oblastech, kde se dnes používají SAT řešiče a SMT řešiče.
+
+Existuje celá řada metod pro hledání modelů, tato práce se však
+zabývá pouze metodou MACE a jejími modifikacemi.
+Metoda MACE převádí problém hledání
+konečného modelu velikosti $n$ v klasické logice prvního řádu
+na problém SAT. Většina modifikací metody MACE se snaží o to, aby
+byl výsledný SAT vyřešitelný rychle a s malým množstvím paměti.
+
+Náš program implementuje metodu MACE, její modifikace známé
+z programu Paradox a některé nové modifikace,
+které, pokud je nám známo, zatím ještě nikdo nezkoušel.
+Například kromě převodu na SAT je implementován
+převod do jazyka řešiče omezujících podmínek Gecode
+nebo přidávání redundantních formulí ke vstupu.
+
+Práce je rozdělena do šesti kapitol. Tato kapitola
+stručně představuje téma práce.
+Druhá kapitola obsahuje definice základních pojmů,
+jenž budeme používat v dalších kapitolách,
+a přesnější popis řešeného problému.
+
+Třetí kapitola popisuje existující metody pro hledání modelů.
+Důraz je kladen na metody MACE a SEM pro hledání konečných modelů.
+
+Čtvrtá kapitola začíná popisem našich vlastních vylepšení metody MACE,
+která jsou v programu implementována.
+Následuje popis samotné implementace programu -- je popsána architektura
+programu, zdůvodněny volby datových typů a volba programovacího jazyka.
+Pátá kapitola obsahuje experimentální srovnání našeho hledače konečných modelů
+s jinými programy.
+Šestá kapitola shrnuje dosažené výsledky a popisuje další možná vylepšení
+metody MACE, která však nejsou implementována v našem programu.
+

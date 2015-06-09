@@ -1,0 +1,269 @@
+\chapter{Základní definice}
+
+Hlavním účelem této kapitoly je sjednotit základní definice a značení.
+Kromě toho si v této kapitole popíšeme,
+co přesně má náš program dělat -- co přesně je vstupem a výstupem programu.
+Předpokládáme, že čtenář již zná základy klasické logiky prvního
+řádu a základní techniky pro řešení omezujících podmínek.
+Chybějící znalosti logiky lze doplnit z
+\cite{enderton2001logic} a omezujících podmínek z
+\cite{dechter2003constraints}.
+
+Budeme pracovat ve vícesortové klasické logice prvního řádu.
+V celém textu budeme
+používat pevně danou signaturu, která se skládá z nekonečné množiny sort
+$\sorts$, množiny funkčních symbolů $\funcs$, množiny predikátových symbolů
+$\preds$ a funkce $\arity: \funcs \cup \preds \to \sorts^\star$,
+kde $\sorts^\star$ značí množinu konečných posloupností sort.
+Funkce $\arity$ přiřazuje každému funkčnímu symbolu neprázdnou posloupnost
+sort $\langle \sort_1 \comdots \sort_n, \sort \rangle$,
+kde $n \ge 0$ je počet argumentů,
+$\sort_1 \comdots \sort_n$ jsou sorty argumentů a $\sort$ je sorta výsledku.
+Funkce $\arity$ přiřazuje každému predikátovému symbolu posloupnost
+sort $\langle \sort_1 \comdots \sort_n \rangle$, kde $n \ge 0$
+je počet argumentů a $\sort_1 \comdots \sort_n$ jsou sorty argumentů.
+
+Pro každou neprázdnou posloupnost sort $a$ obsahuje $\funcs$ nekonečně
+mnoho symbolů s aritou $a$. Pro každou posloupnost sort $a$ obsahuje
+$\preds$ nekonečně mnoho symbolů s aritou $a$.
+
+Dále je každé sortě $\sort$ přiřazena nekonečná množina proměnných
+$\vars_\sort$ a tyto množiny jsou navzájem disjunktní.
+$\vars$ je množina všech proměnných,
+tj. $\bigcup_{\sort \in \sorts} \vars_\sort$. Množiny $\nat0$, $\sorts$, $\funcs$,
+$\preds$, $\vars$ jsou navzájem disjunktní.
+
+Termy sorty $\sort$ jsou definovány induktivně:
+
+\begin{itemize}
+\item proměnná sorty $\sort$ je term sorty $\sort$,
+\item je-li $\func$ funkční symbol s aritou
+  $\langle \sort_1 \comdots \sort_n, \sort \rangle$
+  a $\term_i$ term sorty $\sort_i$ pro každé $i \in \{ 1 \comdots n \}$, pak
+  $\func(\term_1 \comdots \term_n)$ je term sorty $\sort$.
+\end{itemize}
+
+Atomy jsou definovány induktivně:
+
+\begin{itemize}
+\item jsou-li $\termS$ a $\term$ termy stejné sorty,
+  pak $\termS \approx \term$ je atom,
+\item je-li $\pred$ predikátový symbol
+  s aritou $\langle \sort_1 \comdots \sort_n \rangle$
+  a $\term_i$ term sorty $\sort_i$ pro každé $i \in \{ 1 \comdots n \}$, pak
+  $\pred(\term_1 \comdots \term_n)$ je atom.
+\end{itemize}
+
+Literál je atom nebo jeho negace. Klauzule je disjunkce literálů.
+Řekneme, že sorta $\sort$ se vyskytuje v termu, atomu, literálu, klauzuli,
+množině klauzulí, pokud se tam vyskytuje proměnná sorty $\sort$ nebo
+funkční či predikátový symbol, kde $\sort$ je sorta argumentu nebo výsledku.
+
+% POZN: Nedefinujeme, ale používáme "sorta se vyskytuje v aritě",
+% "term, atom, literál, klauzule, množina klauzulí, arita obsahuje sortu".
+% Předpokládáme, že význam je čtenáři zřejmý.
+
+Sorty budeme značit písmenem $\sort$, funkční symboly písmenem $\func$,
+predikáty písmenem $\pred$ a proměnné písmeny $\var$, $\varY$ a $\varZ$.
+Termy budeme značit písmeny $\termS$ a $\term$, atomy písmenem $\atom$,
+literály písmenem $\lit$, klauzule písmenem $\clause$ a množiny
+klauzulí písmenem $\clauses$.
+
+Nyní zadefinujeme interpretaci.
+Mějme množiny $\sorts' \subseteq \sorts$, $\funcs' \subseteq \funcs$
+a $\preds' \subseteq \preds$, kde $\sorts'$ obsahuje alespoň sorty
+vyskytující se v aritách symbolů z $\funcs'$ a $\preds'$.
+Funkce $\interp$ definovaná na množině $\sorts' \cup \funcs' \cup \preds'$
+je interpretace, jestliže
+
+\begin{itemize}
+\item každé sortě z $\sorts'$ přiřadí neprázdnou množinu (doménu),
+\item každému funkčnímu symbolu $\func \in \funcs'$ s aritou
+  $\langle \sort_1 \comdots \sort_n, \sort \rangle$ přiřadí funkci
+  $\func^\interp: \interp(\sort_1) \timdots \interp(\sort_n) \to
+  \interp(\sort)$
+\item a každému predikátovému symbolu $\pred \in \preds'$ s aritou
+  $\langle \sort_1 \comdots \sort_n \rangle$ přiřadí relaci
+  $\pred^\interp \subseteq \interp(\sort_1) \timdots \interp(\sort_n)$.
+\end{itemize}
+
+Interpretace je konečná, jsou-li $\sorts'$, $\funcs'$ a $\preds'$
+konečné a je-li každá doména konečná.
+Konečná interpretace je číselná, pokud je každá doména
+počáteční úsek $\nat0$, jinak řečeno, pokud je každá doména rovna
+$\{ 0 \comdots n - 1 \}$, kde $n$ je velikost domény.
+Pokud není řečeno jinak, bude
+$\interp$ v dalším textu označovat interpretaci definovanou
+na množině $\sorts' \cup \funcs' \cup \preds'$.
+
+Buď $\interp$ interpretace a $\beta$ funkce definovaná na množině
+$\bigcup_{\sort \in \sorts'} \vars_\sort$. Funkci $\beta$ nazveme ohodnocením
+proměnných, pokud každé proměnné $\var \in \vars_\sort$ přiřazuje
+prvek domény $\sort$.
+
+Je-li $R$ term nebo atom nebo literál nebo klauzule, jenž
+obsahuje pouze sorty z~$\sorts'$, funkční symboly z $\funcs'$ a
+predikátové symboly z $\preds'$, pak
+hodnotu $R$ při interpretaci $\interp$ a ohodnocení proměnných
+$\beta$ značíme $\interp_\beta(R)$. Pro term $\term$ je $\interp_\beta(\term)$
+definováno následovně:
+\begin{align*}
+\interp_\beta(\var) &= \beta(\var) \\
+\interp_\beta\bigl(\func(\term_1 \comdots \term_n)\bigr) &=
+  \interp\bigl(\func\bigr)\bigl(\interp_\beta(\term_1) \comdots
+    \interp_\beta(\term_n)\bigr)
+\end{align*}
+Pro literál $\lit$ je $\interp_\beta(\lit)$ definováno takto:
+\begin{align*}
+\interp_\beta(\termS \approx \term) &=
+  \begin{cases}
+    1 & \text{pokud } \interp_\beta(\termS) = \interp_\beta(\term) \\
+    0 & \text{jinak}
+  \end{cases} \\
+\interp_\beta\bigl(\pred(\term_1 \comdots \term_n)\bigr) &=
+  \begin{cases}
+    1 & \text{pokud }
+      \bigl(\interp_\beta(\term_1) \comdots \interp_\beta(\term_n)\bigr)
+      \in \interp(\pred) \\
+    0 & \text{jinak}
+  \end{cases} \\
+\interp_\beta(\neg \atom) &= 1 - \interp_\beta(\atom)
+\end{align*}
+A nakonec definice $\interp_\beta(\clause)$ pro klauzuli $\clause$:
+\begin{align*}
+\interp_\beta(\lit_1 \vee \cdots \vee \lit_n) &=
+  \max \bigl\{ 0, \interp_\beta(\lit_1) \comdots \interp_\beta(\lit_n) \bigr\}
+\end{align*}
+
+Skutečnost, že $\interp_\beta(R) = 1$, kde $R$ je atom, literál nebo klauzule,
+zapisujeme
+\[
+\interp_\beta \models R.
+\]
+Platí-li $\interp_\beta \models R$ pro libovolné $\beta$, říkáme,
+že $\interp$ je model $R$, a píšeme
+\[
+\interp \models R.
+\]
+Model $\interp$ je konečný resp. číselný, je-li interpretace
+$\interp$ konečná resp. číselná.
+$\interp$ je model množiny klauzulí $N$,
+pokud je $\interp$ model každé klauzule z $N$.
+
+Interpretace $\interp$ a $\interp'$ nad
+$\sorts' \cup \funcs' \cup \preds'$ jsou izomorfní
+(značíme $\interp \simeq \interp'$), pokud pro každou
+sortu $\sort \in \sorts'$ existuje bijekce
+$i_\sort: \interp(\sort) \to \interp'(\sort)$, že
+\begin{itemize}
+\item pro každý funkční symbol $\func \in \funcs'$ s aritou
+  $\langle \sort_1 \comdots \sort_n, \sort \rangle$
+  a pro každé $d_j \in \interp(\sort_j)$,
+  kde $j \in \{ 1 \comdots n \}$, platí
+  \[
+     i_\sort\bigl(\interp(\func)(d_1 \comdots d_n)\bigr) =
+     \interp'\bigl(\func\bigr)\bigl(i_{\sort_1}(d_1) \comdots
+       i_{\sort_n}(d_n)\bigr)
+  \]
+\item a pro každý predikátový symbol $\pred \in \preds'$ s aritou
+  $\langle \sort_1 \comdots \sort_n \rangle$
+  a pro každé $d_j \in \interp(\sort_j)$,
+  kde $j \in \{ 1, \comdots, n \}$, platí
+  \[
+     (d_1 \comdots d_n) \in \interp(\pred) \iff
+     \bigl(i_{\sort_1}(d_1) \comdots i_{\sort_n}(d_n)\bigr) \in \interp'(\pred).
+  \]
+\end{itemize}
+
+Připomeňme vlastnosti izomorfních interpretací:
+\begin{itemize}
+\item[(1)] Každá konečná interpretace je izomorfní číselné interpretaci.
+\item[(2)] Je-li $\interp \simeq \interp'$ a $\clauses$ množina klauzulí,
+  pak $\interp$ je model $\clauses$ právě tehdy,
+  když $\interp'$ je model $\clauses$.
+\end{itemize}
+
+V tomto okamžiku máme potřebné definice,
+abychom specifikovali chování programu -- jaký problém program řeší:
+
+\begin{defn}
+Program pracuje ve dvou režimech -- hledání jednoho modelu a
+hledání všech neizomorfních modelů. V obou režimech je vstupem programu
+sorta $\sort$ a konečná množina klauzulí $\clauses$,
+kde se vyskytuje pouze sorta $\sort$.
+V obou režimech jsou výstupem konečné modely $\clauses$
+s jedinou sortou $\sort$, které
+interpretují právě symboly z $\clauses$.
+
+V režimu hledání jednoho modelu jsou navíc vstupem přirozená čísla
+$n \leq n'$. Výstupem v tomto režimu je model
+s doménou velikosti $m$, kde $n \leq m \leq n'$, pokud existuje.
+
+V režimu hledání všech neizomorfních modelů je
+navíc vstupem programu přirozené číslo $n$.
+Výstupem v tomto režimu jsou všechny navzájem
+neizomorfní modely s doménou velikosti $n$.
+\end{defn}
+
+Z (1) a (2) plyne, že pro každý vstup programu existuje výstup
+obsahující pouze číselné modely. Aniž by to mělo vliv na úplnost
+programu, může program hledat pouze číselné modely.
+Navíc číselných interpretací, jenž jsou kandidáty na model,
+je pouze konečně mnoho (důvodem je, že
+číselných interpretací s jedinou sortou $\sort$ obsahujících právě symboly
+z $\clauses$ a doménou velikosti $n$ je pouze konečně mnoho),
+díky čemuž lze hledané
+modely získat metodou generuj a testuj a stačí k tomu primitivní rekurze.
+
+Zbývající definice se nám budou hodit při detekci izomorfních modelů.
+Zobrazení kanonických reprezentantů $\rho$ pro číselné interpretace
+je zobrazení z číselných interpretací do číselných interpretací splňující
+\begin{itemize}
+\item $\rho(\interp) \simeq \interp$
+\item a $\interp \simeq \interp' \iff \rho(\interp) = \rho(\interp')$.
+\end{itemize}
+
+Orientovaný barevný graf (dále jen graf) je trojice $G = (V, E, c)$, kde
+$V$ je konečná množina vrcholů, $E \subseteq V \times V$ je množina hran
+a $c : V \to \nat0$ je obarvení vrcholů. Grafy
+$G = (V, E, c)$ a $G' = (V, E', c')$ jsou izomorfní (značíme $G \simeq G'$),
+pokud existuje bijekce $i : V \to V$, že
+\begin{itemize}
+\item $c'\bigl(i(v)\bigr) = c(v)$
+\item a $(u, v) \in E \iff \bigl(i(u), i(v)\bigr) \in E'$.
+\end{itemize}
+
+Zobrazení kanonických reprezentantů $\rho$ pro grafy
+je zobrazení z grafů do grafů splňující
+\begin{itemize}
+\item $\rho(G) \simeq G'$
+\item a $G \simeq G' \iff \rho(G) = \rho(G')$.
+\end{itemize}
+
+
+\begin{note}
+K definicím.
+\begin{itemize}
+\item Některé transformace problému zavádějí nové symboly --
+  v takovém případě je možné rozšířit signaturu nebo zajistit,
+  že stávající signatura obsahuje dostatek nepoužitých symbolů. Domníváme se,
+  že druhá možnost, ač méně obvyklá, je přehlednější --
+  v celém textu používáme jednu signaturu, která je
+  zkonstruována tak, že pro každou aritu vždy existuje
+  nepoužitý symbol. Díky tomu, že signatura je pouze jedna,
+  není třeba ji zmiňovat v každém tvrzení.
+\item Proč je množina sort $\sorts'$ v interpretaci zadána explicitně, proč
+  není implicitně určena na základě interpretovaných symbolů?
+  Interpretovat pouze sorty obsažené ve funkčních a predikátových
+  symbolech nestačí, je třeba interpretovat i sorty proměnných.
+\item Proč je sorta na vstupu zadána explicitně, proč není implicitně určena
+  z klauzulí na vstupu? Vstupní množina klauzulí nemusí žádnou sortu
+  obsahovat (prázdná množina nebo množina s prázdnou klauzulí), v takovém
+  případě není
+  jednoznačně určeno, jakou sortu má model interpretovat, a číselných
+  interpretací, jenž jsou kandidáty na model, je nekonečně mnoho.
+\item Vstup i výstup programu jsou jednosortové, proč výklad komplikovat
+  více\-sor\-tovou logikou? Některé problémy s jednou sortou
+  lze přeformulovat jako rychleji vyřešitelné problémy s více sortami.
+\end{itemize}
+\end{note}
