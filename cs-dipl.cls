@@ -27,6 +27,7 @@
 
 \usepackage{url}
 \usepackage{subfig}
+\usepackage{algpseudocode}
 
 % Okraje.
 \usepackage[top=2.5cm,bottom=2.5cm,left=4cm,right=2.5cm]{geometry}

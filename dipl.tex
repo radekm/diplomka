@@ -43,7 +43,7 @@
   description={množina funkčních symbolů},
   sort=Fset
 }
-\newcommand\funcs{\gls{funcs}}
+\newcommand\funcs{{\gls{funcs}}}
 
 \newglossaryentry{preds}
 {
@@ -51,7 +51,7 @@
   description={množina predikátových symbolů},
   sort=Pset
 }
-\newcommand\preds{\gls{preds}}
+\newcommand\preds{{\gls{preds}}}
 
 \newglossaryentry{vars}
 {
@@ -89,11 +89,12 @@
 
 \newglossaryentry{func}
 {
-  name={\ensuremath{f}},
-  description={funkční symbol},
+  name={\ensuremath{c, f}},
+  description={funkční symboly},
   sort=f
 }
-\newcommand\func{{\gls{func}}}
+\newcommand\func{{\glsdisp{func}{\ensuremath{f}}}}
+\newcommand\funcC{{\glsdisp{func}{\ensuremath{c}}}}
 
 \newglossaryentry{pred}
 {
@@ -313,6 +314,7 @@ TODO
 
 \input{01_uvod}
 \input{02_definice}
+\input{03_analyza}
 
 \renewcommand\bibname{Seznam použité literatury}
 
