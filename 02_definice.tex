@@ -30,7 +30,7 @@ $\preds$ nekonečně mnoho symbolů s aritou $a$.
 Dále je každé sortě $\sort$ přiřazena nekonečná množina proměnných
 $\vars_\sort$ a tyto množiny jsou navzájem disjunktní.
 $\vars$ je množina všech proměnných,
-tj. $\bigcup_{\sort \in \sorts} \vars_\sort$. Množiny $\nat0$, $\sorts$, $\funcs$,
+tj. $\bigcup_{\sort \in \sorts} \vars_\sort$. Množiny $\natZ$, $\sorts$, $\funcs$,
 $\preds$, $\vars$ jsou navzájem disjunktní.
 
 Termy sorty $\sort$ jsou definovány induktivně:
@@ -91,7 +91,7 @@ je interpretace, jestliže
 Interpretace je konečná, jsou-li $\sorts'$, $\funcs'$ a $\preds'$
 konečné a je-li každá doména konečná.
 Konečná interpretace je číselná, pokud je každá doména
-počáteční úsek $\nat0$, jinak řečeno, pokud je každá doména rovna
+počáteční úsek $\natZ$, jinak řečeno, pokud je každá doména rovna
 $\{ 0 \comdots n - 1 \}$, kde $n$ je velikost domény.
 Pokud není řečeno jinak, bude
 $\interp$ v dalším textu označovat interpretaci definovanou
@@ -226,7 +226,7 @@ je zobrazení z číselných interpretací do číselných interpretací splňuj
 
 Orientovaný barevný graf (dále jen graf) je trojice $G = (V, E, c)$, kde
 $V$ je konečná množina vrcholů, $E \subseteq V \times V$ je množina hran
-a $c : V \to \nat0$ je obarvení vrcholů. Grafy
+a $c : V \to \natZ$ je obarvení vrcholů. Grafy
 $G = (V, E, c)$ a $G' = (V, E', c')$ jsou izomorfní (značíme $G \simeq G'$),
 pokud existuje bijekce $i : V \to V$, že
 \begin{itemize}

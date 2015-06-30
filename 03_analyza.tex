@@ -28,7 +28,7 @@ $n_\sort$ a $\funcs'$ resp. $\preds'$ je množina obsahující právě funkční
 resp. predikátové symboly z $\clauses$.
 
 Všimněme si, že zadání úlohy jednoznačně určuje domény sort
-(domény jsou počátečním úsekem $\nat0$ a známe i jejich velikosti).
+(domény jsou počátečním úsekem $\natZ$ a známe i jejich velikosti).
 Díky tomu jsou hledané modely jednoznačně určeny pouze funkcemi a relacemi.
 Navíc víme, nad jakými množinami jsou funkce i relace definovány.
 Označme $D_\sort = \{ 0 \comdots n_\sort - 1 \}$ doménu
@@ -266,7 +266,7 @@ pro metodu, jenž si nyní představíme.
 Metoda SEM je popsána v \cite{zhang1995sem}.
 Na rozdíl od metody MACE metoda SEM problém nikam nepřevádí, ale rovnou
 ho sama řeší.
-Pro popis metody SEM budeme předpokládat $v, v' \in \nat0$ a $c$ je buňka.
+Pro popis metody SEM budeme předpokládat $v, v' \in \natZ$ a $c$ je buňka.
 
 Metoda SEM sestává ze dvou funkcí \textproc{Search} a \textproc{Propagate}.
 Tyto funkce reprezentují stav řešeného problému jako
@@ -472,7 +472,7 @@ Obecně, obsahuje-li $E$ podmínky tvaru
 \neg \bigl(\func(v_1 \comdots v_{i-1}, c, v_{i+1} \comdots  v_n)
   &\approx v\bigr),
 \end{align*}
-kde $v_1 \comdots v_n \in \nat0$, pak odvodíme, že buňka $c$ nemůže
+kde $v_1 \comdots v_n \in \natZ$, pak odvodíme, že buňka $c$ nemůže
 obsahovat hodnotu $v_i$. Stejný závěr lze učinit, když
 v první podmínce bude nerovnost a ve druhé rovnost
 nebo když informace $\func(v_1 \comdots v_n) = v$ resp. její
