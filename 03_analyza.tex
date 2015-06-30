@@ -415,4 +415,121 @@ V případě, že nastal konflikt, funkce
 \textproc{Propagate} vrátí hodnotou \texttt{conflict},
 v opačném případě je vrácena nová pětice.
 
-\subsection{Modifikace metod MACE a SEM}
+\subsection{Lepší propagace pro SEM}
+
+Popsali jsme základní varianty metod MACE a SEM,
+nyní se podíváme na jejich modifikace.
+První modifikací, kterou si ukážeme, bude lepší
+propagace pro metodu SEM.
+
+Obsahuje-li $E$ podmínku s jedním literálem tvaru $c \approx v$
+(resp. $v \approx c$) a je-li $(c, D) \in U_\funcs$ pro nějaké $D$,
+pak funkce \textproc{Propagate} přiřadí buňce $c$ hodnotu $v$
+bez ohledu na to, zda $v \in D$. Pokud $v \notin D$, dojde
+v každém případě ke konfliktu -- lepší by tedy bylo přiřazení vůbec
+neprovádět a okamžitě hlásit konflikt.
+
+První dvě pravidla funkce \textproc{Propagate} slouží
+ke zjednodušování množiny podmínek $E$.
+Tato pravidla využívají množiny $A_\funcs$ a $A_\preds$
+a nevyužívají množinu $E$.
+Například, máme-li
+\[
+  E = \bigl\{ \func(\funcG(0)) \approx 1,
+              \func(\funcG(0)) \approx \funcG(0) \bigr\}
+\]
+a obsahuje-li $U_\funcs$ dvojice $(\func(1), D)$
+a $(\funcG(0), D)$, kde $D = \{ 0, 1, 2, 3 \}$, pak funkce
+\textproc{Propagate} nic neudělá.
+Kdybychom však propagaci rozšířili o pravidlo demodulace,
+mohli bychom první podmínku $\func(\funcG(0)) \approx 1$
+použít ke zjednodušení druhé podmínky $\func(\funcG(0)) \approx \funcG(0)$,
+čímž bychom dostali:
+\[
+  E = \bigl\{ \func(\funcG(0)) \approx 1, 1 \approx \funcG(0) \bigr\}.
+\]
+S těmito podmínkami si již poradí i původní funkce \textproc{Propagate}
+-- buňkám $\func(1)$ a $\funcG(0)$ přiřadí hodnotu 1 a podmínky eliminuje.
+
+Demodulace používá rovnosti, mohli bychom využít i nerovnosti?
+Je-li
+\[
+  E = \bigl\{ \func(2, 3) \approx 4,
+              \neg (\func(2, \funcG(5)) \approx 4) \bigr\},
+\]
+pak buňce $\funcG(5)$ nelze přiřadit hodnotu 3. Stejný
+závěr vyvodíme, když prohodíme rovnost s nerovností
+\[
+  E' = \bigl\{ \neg (\func(2, 3) \approx 4),
+              \func(2, \funcG(5)) \approx 4 \bigr\}
+\]
+nebo když informace $\func(2, 3) = 4$ resp. $\func(2, 3) \neq 4$  bude
+pocházet z $A_\funcs$ resp. $U_\funcs$ místo z $E$ resp. $E'$.
+
+Obecně, obsahuje-li $E$ podmínky tvaru
+\begin{align*}
+\func(v_1 \comdots v_n) &\approx v, \\
+\neg \bigl(\func(v_1 \comdots v_{i-1}, c, v_{i+1} \comdots  v_n)
+  &\approx v\bigr),
+\end{align*}
+kde $v_1 \comdots v_n \in \nat0$, pak odvodíme, že buňka $c$ nemůže
+obsahovat hodnotu $v_i$. Stejný závěr lze učinit, když
+v první podmínce bude nerovnost a ve druhé rovnost
+nebo když informace $\func(v_1 \comdots v_n) = v$ resp. její
+negace nebude pocházet z $E$, ale z $A_\funcs$ resp. $U_\funcs$.
+Rovněž lze prohodit levou a pravou stranu rovnosti anebo
+nerovnosti. Analogické pravidlo lze formulovat i pro relace.
+Tento druh propagace je implementován v hledači modelů Mace4
+\cite{mccune03mace4}, kde se nazývá negativní propagace.
+
+V zobecňování bychom mohli pokračovat. Například
+z následujících podmínek
+\[
+  E = \bigl\{ \neg \pred(0, \funcG(2), \funcG(2)),
+              \pred(0, \funcG(2), 1) \bigr\}
+\]
+bychom chtěli odvodit, že buňce $\funcG(2)$ nelze přiřadit hodnotu 1.
+K tomu nám negativní propagace, jak jsme ji formulovali, nestačí.
+Místo ní bychom mohli použít pravidlo:
+Pokud $E$ obsahuje
+podmínky tvaru $\pred(s_1 \comdots s_n)$
+a $\neg \pred(t_1 \comdots t_n)$, pak buňkám nesmíme přiřadit
+hodnoty, aby $s_i = t_i$ pro všechna $i \in \{ 1 \comdots n \}$.
+Je zřejmé, že jednu podmínku z $E$ lze nahradit
+literálem z $A_\preds$. Například je-li
+\[
+  E = \bigl\{ \pred(\funcG(1), \funcG(1)) \bigr\}
+\]
+a $\neg \pred(0, 0) \in A_\preds$, pak buňce $\funcG(1)$
+nelze přiřadit hodnotu 0.
+
+% Analogicky můžeme postupovat i u rovností:
+% Obsahuje-li $E$ podmínky tvaru
+% $s \approx s'$ a $\neg (t \approx t')$,
+% pak buňkám nesmíme přiřadit hodnoty, aby $(s = t) \wedge (s' = t')$
+% nebo $(s' = t) \wedge (s = t')$.
+%
+% Toto analogické pravidlo opět musí uvažovat množiny
+% A_\funcs a U_\funcs, aby bylo ostře silnější než negativní propagace
+% pro rovnosti.
+
+% Další metoda propagace: Vybrat n-tici podmínek
+% a použít zobecněnou hranovou konzistenci: Každé buňce
+% zkusit přiřadit každou její hodnotu a pak zkusit najít podporu
+% v ostatních buňkách - tj. zda ostatním buňkám jde přiřadit
+% hodnota, aby všechny podmínky z vybrané n-tice byly splněny.
+
+
+\subsection{Opakované použití výrokových klauzulí pro MACE}
+
+\subsection{Další pravidla pro zplošťování}
+
+\subsection{Rozdělování klauzulí}
+
+\subsection{Definice termů}
+
+\subsection{Redukce symetrií}
+
+\subsection{Inference sort}
+
+\subsection{Omezení velikosti domén}
