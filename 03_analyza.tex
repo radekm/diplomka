@@ -137,23 +137,23 @@ má doménu velikosti 3 resp. 2.
 Aby tabulky symbolů $\func$ a $\funcC$ byly modelem klauzule
 $\clause_1$, musí platit následující podmínky:
 \begin{gather*}
-  \func(0, 0) = 0 \text{ nebo } \funcC = 0 \\
-  \func(1, 0) = 1 \text{ nebo } \funcC = 1 \\
-  \func(2, 0) = 2 \text{ nebo } \funcC = 2 \\
-  \func(0, 1) = 0 \text{ nebo } \funcC = 0 \\
-  \func(1, 1) = 1 \text{ nebo } \funcC = 1 \\
-  \func(2, 1) = 2 \text{ nebo } \funcC = 2
+  \func(0, 0) = 0 \text{ nebo } \funcC = 0, \\
+  \func(1, 0) = 1 \text{ nebo } \funcC = 1, \\
+  \func(2, 0) = 2 \text{ nebo } \funcC = 2, \\
+  \func(0, 1) = 0 \text{ nebo } \funcC = 0, \\
+  \func(1, 1) = 1 \text{ nebo } \funcC = 1, \\
+  \func(2, 1) = 2 \text{ nebo } \funcC = 2.
 \end{gather*}
 Uvedené podmínky se skládají z výroků, jenž přímo odpovídají
 vý\-ro\-ko\-vým pro\-měnným.
 Díky tomu můžeme podmínky snadno zakódovat do výrokových klauzulí:
 \begin{gather*}
-  A_{\func(0, 0) = 0} \vee A_{\funcC = 0} \\
-  A_{\func(1, 0) = 1} \vee A_{\funcC = 1} \\
-  A_{\func(2, 0) = 2} \vee A_{\funcC = 2} \\
-  A_{\func(0, 1) = 0} \vee A_{\funcC = 0} \\
-  A_{\func(1, 1) = 1} \vee A_{\funcC = 1} \\
-  A_{\func(2, 1) = 2} \vee A_{\funcC = 2}
+  A_{\func(0, 0) = 0} \vee A_{\funcC = 0}, \\
+  A_{\func(1, 0) = 1} \vee A_{\funcC = 1}, \\
+  A_{\func(2, 0) = 2} \vee A_{\funcC = 2}, \\
+  A_{\func(0, 1) = 0} \vee A_{\funcC = 0}, \\
+  A_{\func(1, 1) = 1} \vee A_{\funcC = 1}, \\
+  A_{\func(2, 1) = 2} \vee A_{\funcC = 2}.
 \end{gather*}
 
 Klauzuli $\clause_1$ jsme tedy zakódovali do 6 výrokových klauzulí,
@@ -162,8 +162,8 @@ Bohužel, ne každou klauzuli jde zakódovat takto přímočaře.
 Například, aby tabulky symbolů byly modelem klauzule
 $\clause_2 = \func(\funcC, \varY) \approx \funcC$, musí platit podmínky
 \begin{gather*}
-  \func(\funcC, 0) = \funcC \\
-  \func(\funcC, 1) = \funcC
+  \func(\funcC, 0) = \funcC, \\
+  \func(\funcC, 1) = \funcC.
 \end{gather*}
 Na rozdíl od podmínek pro $\clause_1$ výroky v podmínkách pro $\clause_2$
 neodpovídají přímo výrokovým proměnným.
@@ -172,27 +172,27 @@ Víme však, že $\funcC$ má jednu z hodnot 0, 1, nebo 2, nabízí se tedy
 použít podmiňování. Pokud má $\funcC$ hodnotu 0, pak musí platit
 podmínky
 \begin{gather*}
-  \func(0, 0) = 0 \\
-  \func(0, 1) = 0
+  \func(0, 0) = 0, \\
+  \func(0, 1) = 0,
 \end{gather*}
 pokud má $\funcC$ hodnotu 1, musí platit
 \begin{gather*}
-  \func(1, 0) = 1 \\
-  \func(1, 1) = 1
+  \func(1, 0) = 1, \\
+  \func(1, 1) = 1,
 \end{gather*}
 a nakonec, pokud má $\funcC$ hodnotu 2, musí platit
 \begin{gather*}
-  \func(2, 0) = 2 \\
-  \func(2, 1) = 2
+  \func(2, 0) = 2, \\
+  \func(2, 1) = 2.
 \end{gather*}
 Tyto podmínky již do výrokových klauzulí zakódujeme snadno:
 \begin{gather*}
-  A_{\funcC = 0} \implies A_{\func(0, 0) = 0} \\
-  A_{\funcC = 0} \implies A_{\func(0, 1) = 0} \\
-  A_{\funcC = 1} \implies A_{\func(1, 0) = 1} \\
-  A_{\funcC = 1} \implies A_{\func(1, 1) = 1} \\
-  A_{\funcC = 2} \implies A_{\func(2, 0) = 2} \\
-  A_{\funcC = 2} \implies A_{\func(2, 1) = 2}
+  A_{\funcC = 0} \implies A_{\func(0, 0) = 0}, \\
+  A_{\funcC = 0} \implies A_{\func(0, 1) = 0}, \\
+  A_{\funcC = 1} \implies A_{\func(1, 0) = 1}, \\
+  A_{\funcC = 1} \implies A_{\func(1, 1) = 1}, \\
+  A_{\funcC = 2} \implies A_{\func(2, 0) = 2}, \\
+  A_{\funcC = 2} \implies A_{\func(2, 1) = 2}.
 \end{gather*}
 
 Klauzule, které lze zakódovat do výrokových klauzulí
@@ -344,17 +344,17 @@ $(A_\funcs, A_\preds, U_\funcs, U_\preds, E)$. Výstupem funkce
 
 Na začátku metoda SEM zavolá funkci \textproc{Search} s argumenty
 \begin{align*}
-A_\funcs &= \emptyset \\
-A_\preds &= \emptyset \\
+A_\funcs &= \emptyset, \\
+A_\preds &= \emptyset, \\
 U_\funcs &=
   \bigl\{ (c, D_\sort) \bigm|
     \func \in \funcs',
     \sort \text{ je sorta výsledku } \func,
-    c \in \cells_\func \bigr\} \\
+    c \in \cells_\func \bigr\}, \\
 U_\preds &=
   \bigl\{ c \bigm|
     \pred \in \preds',
-    c \in \cells_\pred \bigr\} \\
+    c \in \cells_\pred \bigr\}, \\
 E &=
   \Bigl\{ e \Bigm|
     \array{c}
@@ -363,7 +363,7 @@ E &=
       \text{proměnnou $\var$ z $\clause$ nahradí hodnotou z $D_\sort$, kde $\sort$
             je sorta $\var$}
     \endarray
-    \Bigr\}
+    \Bigr\}.
 \end{align*}
 Výstupem takového volání jsou hledané modely.
 Funkce \textproc{Search} používá pomocnou funkci \textproc{Propagate}.

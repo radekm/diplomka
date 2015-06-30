@@ -109,31 +109,31 @@ hodnotu $R$ při interpretaci $\interp$ a ohodnocení proměnných
 $\beta$ značíme $\interp_\beta(R)$. Pro term $\term$ je $\interp_\beta(\term)$
 definováno následovně:
 \begin{align*}
-\interp_\beta(\var) &= \beta(\var) \\
+\interp_\beta(\var) &= \beta(\var), \\
 \interp_\beta\bigl(\func(\term_1 \comdots \term_n)\bigr) &=
   \interp\bigl(\func\bigr)\bigl(\interp_\beta(\term_1) \comdots
-    \interp_\beta(\term_n)\bigr)
+    \interp_\beta(\term_n)\bigr).
 \end{align*}
 Pro literál $\lit$ je $\interp_\beta(\lit)$ definováno takto:
 \begin{align*}
 \interp_\beta(\termS \approx \term) &=
   \begin{cases}
-    1 & \text{pokud } \interp_\beta(\termS) = \interp_\beta(\term) \\
-    0 & \text{jinak}
+    1 & \text{pokud } \interp_\beta(\termS) = \interp_\beta(\term), \\
+    0 & \text{jinak},
   \end{cases} \\
 \interp_\beta\bigl(\pred(\term_1 \comdots \term_n)\bigr) &=
   \begin{cases}
     1 & \text{pokud }
       \bigl(\interp_\beta(\term_1) \comdots \interp_\beta(\term_n)\bigr)
-      \in \interp(\pred) \\
-    0 & \text{jinak}
+      \in \interp(\pred), \\
+    0 & \text{jinak},
   \end{cases} \\
-\interp_\beta(\neg \atom) &= 1 - \interp_\beta(\atom)
+\interp_\beta(\neg \atom) &= 1 - \interp_\beta(\atom).
 \end{align*}
 A nakonec definice $\interp_\beta(\clause)$ pro klauzuli $\clause$:
 \begin{align*}
 \interp_\beta(\lit_1 \vee \cdots \vee \lit_n) &=
-  \max \bigl\{ 0, \interp_\beta(\lit_1) \comdots \interp_\beta(\lit_n) \bigr\}
+  \max \bigl\{ 0, \interp_\beta(\lit_1) \comdots \interp_\beta(\lit_n) \bigr\}.
 \end{align*}
 
 Skutečnost, že $\interp_\beta(R) = 1$, kde $R$ je atom, literál nebo klauzule,
