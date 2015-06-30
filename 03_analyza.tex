@@ -519,8 +519,34 @@ nelze přiřadit hodnotu 0.
 % v ostatních buňkách - tj. zda ostatním buňkám jde přiřadit
 % hodnota, aby všechny podmínky z vybrané n-tice byly splněny.
 
-
 \subsection{Opakované použití výrokových klauzulí pro MACE}
+
+Předpokládejme, že chceme opakovaně hledat modely metodou MACE
+s tím, že při každém hledání zvětšíme domény některých sort.
+
+Naivním řešením je vytvořit úplně novou instanci SATu pro každé hledání.
+To je ovšem zbytečné, neboť nová instance obsahuje skoro
+všechny výrokové klauzule z původní instance. Výjimkou
+jsou klauzule vytvořené v bodu 1c) pro funkce $\func^\interp$,
+kde sorta výsledku $\func$ patří mezi sorty, jejichž doménu zvětšujeme,
+a klauzule z~nich odvozené například pomocí učení klauzulí
+\cite{silva1997grasp}.
+
+S lepším řešením přišel program Paradox \cite{claessen03paradox}.
+Před každým hledáním modelu se vytvoří nová výroková proměnná $A$.
+Literál $A$ se přidá do klauzulí vytvářených v~bodu 1c), které
+bude třeba odstranit. Jelikož je učení klauzulí založeno na rezoluci,
+literál $A$ se rozšíří i do naučených klauzulí, které byly
+odvozeny z klauzulí, jenž bude třeba odstranit.
+SAT řešič je spuštěn s předpokladem $\neg A$,
+tudíž literál $A$ neovlivní nalezený model.
+Pro následující hledání s většími doménami jsou klauzule obsahující
+literál $A$ odstraněny přidáním jednotkové klauzule $A$.
+
+Opakované hledání modelů metodou MACE se používá pro implementaci
+režimu hledání jednoho modelu,
+kdy jsou dána čísla $n \leq n'$ z $\nat$ a hledáme
+model s doménou velikosti $m$, že $n \leq m \leq n'$.
 
 \subsection{Další pravidla pro zplošťování}
 
