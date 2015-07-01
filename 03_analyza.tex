@@ -218,8 +218,8 @@ klauzuli $\clause$:
   nahradit novou klauzulí $\neg (\term \approx \var) \vee \clause$.
 \item Je-li $\lit$ literál z $\clause$ tvaru $\neg (\term \approx \var)$,
   že $\term$ neobsahuje $\var$,
-  pak můžeme $\clause$ nahradit novou klauzulí, kde je jeden výskyt $\term$
-  mimo $\lit$ nahrazen $\var$.
+  pak můžeme $\clause$ upravit tak, že jeden výskyt $\term$
+  mimo $\lit$ nahradíme $\var$.
 \end{itemize}
 Navíc má nová klauzule stejné modely jako původní klauzule.
 
@@ -550,9 +550,44 @@ model s doménou velikosti $m$, že $n \leq m \leq n'$.
 
 \subsection{Další pravidla pro zplošťování}
 
-\subsection{Rozdělování klauzulí}
+Počet různých proměnných v klauzuli $\clause \in \clauses$
+ovlivňuje, do kolika výrokových klauzulí bude $\clause$
+zakódována metodou MACE a do kolika podmínek metodou SEM.
+Obecně počet výrokových klauzulí a počet podmínek
+závisí exponenciálně na počtu různých proměnných.
+Například, obsahuje-li klauzule $\clause$ 3 proměnné z~$\vars_{\sort_1}$
+a 5 proměnných z $\vars_{\sort_2}$ a je-li $n_{\sort_1} = 4$
+a $n_{\sort_2} = 8$, pak počet výrokových klauzulí resp. počet podmínek
+bude $4^3 \cdot 8^5 = 2^{21}$.
+
+Jak je vidět, i pro klauzuli s pouhými 8 proměnnými může vzniknout
+velké množství výrokových klauzulí resp. podmínek.
+Připomeňme navíc, že zplošťování, které je třeba
+provést u metody MACE, přidává do klauzulí nové proměnné.
+Následující tři modifikace se tedy snaží transformovat
+$\clauses$ tak, aby klauzule v $\clauses$ obsahovaly méně proměnných.
+
+Začneme tím, že vylepšíme zplošťování. Oproti pravidlům
+pro zplošťování, která jsme uvedli, obsahuje program Paradox \cite{paradox}
+navíc následující pravidla:
+\begin{itemize}
+\item Klauzuli $\clause$, jenž obsahuje literál $\lit$ tvaru
+  $\neg (\var \approx \varY)$, můžeme upravit tak,
+  že z ní odstraníme literál $\lit$ a všechny výskyty
+  $\var$ nahradíme $\varY$.
+\item Klauzuli $\clause = \lit_1 \vee \cdots \vee \lit_n$, kde literál
+  $\lit_i$ je tvaru $\var \approx \varY$ a literál $L_j$ je tvaru
+  $\neg (\term \approx \varY)$ můžeme nahradit klauzulí
+  $\clause' = \term \approx \var \vee
+  \bigvee_{k \in \{ 1 \comdots n \} \setminus \{ i, j \}} \lit_k$, pokud $\clause'$
+  neobsahuje $\varY$.
+\end{itemize}
+První pravidlo je obsaženo i v článku \cite{claessen03paradox},
+druhé je obsaženo pouze v implementaci.
 
 \subsection{Definice termů}
+
+\subsection{Rozdělování klauzulí}
 
 \subsection{Redukce symetrií}
 
