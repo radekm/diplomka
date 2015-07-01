@@ -215,8 +215,9 @@ klauzuli $\clause$:
 \begin{itemize}
 \item Je-li $\term$ term, jenž se vyskytuje v $\clause$, a $\var$ proměnná,
   jenž se v $\clause$ nevyskytuje, pak klauzuli $\clause$ můžeme
-  nahradit novou klauzulí $\neg (\term \approx \var) \vee \clause$.
-\item Je-li $\lit$ literál z $\clause$ tvaru $\neg (\term \approx \var)$,
+  nahradit novou klauzulí $\term \not\approx \var \vee \clause$.
+\item Je-li $\lit$ literál z $\clause$ tvaru $\term \not\approx \var$
+  (resp. $\var \not\approx \term$),
   že $\term$ neobsahuje $\var$,
   pak můžeme $\clause$ upravit tak, že jeden výskyt $\term$
   mimo $\lit$ nahradíme $\var$.
@@ -229,13 +230,13 @@ $\func(\funcC, \varY) \approx \funcC$, který nemá požadovaný tvar
 (atom může obsahovat nejvýše jeden výskyt funkčního nebo predikátového
 symbolu). Potřebujeme tedy nahradit $\funcC$ proměnnou.
 Napřed použijeme první pravidlo a ke klauzuli $\clause_2$ přidáme literál
-$\neg (\funcC \approx \var)$, tj. dostaneme novou klauzuli
-$\clause_2' = \neg (\funcC \approx \var) \vee
+$\funcC \not\approx \var$, tj. dostaneme novou klauzuli
+$\clause_2' = \funcC \not\approx \var \vee
   \func(\funcC, \varY) \approx \funcC$.
 Na klauzuli $\clause_2'$ pak můžeme použít dvakrát druhé pravidlo
 a nahradit dva výskyty $\funcC$ proměnnou $\var$, čímž
 dostaneme plochou klauzuli
-$\clause_2'' = \neg (\funcC \approx \var) \vee
+$\clause_2'' = \funcC \not\approx \var \vee
 \func(\var, \varY) \approx \var$.
 
 Kdybychom zakódovali
@@ -381,8 +382,8 @@ dokud se pětice mění:
 \item Pro každé $v, v'$ takové, že $v \neq v'$:
   \begin{itemize}
   \item Z $E$ odebrat podmínky, jenž obsahují literál $v \approx v$
-    nebo literál $\neg (v \approx v')$ nebo literál z $A_\preds$.
-  \item Z každé podmínky v $E$ odebrat literály tvaru $\neg (v \approx v)$,
+    nebo literál $v \not\approx v'$ nebo literál z $A_\preds$.
+  \item Z každé podmínky v $E$ odebrat literály tvaru $v \not\approx v$,
     literály tvaru $v \approx v'$ a literály tvaru $\neg \lit$,
     kde $\lit \in A_\preds$.
   \end{itemize}
@@ -392,8 +393,8 @@ dokud se pětice mění:
   kde $(c, D) \in U_\funcs$ pro nějaké $D$,
   odebrat $(c, D)$ z $U_\funcs$
   a přidat $(c, v)$ do $A_\funcs$.
-\item Pro každou podmínku s jedním literálem tvaru $\neg (c \approx v)$
-  (resp. $\neg (v \approx c)$),
+\item Pro každou podmínku s jedním literálem tvaru $c \not\approx v$
+  (resp. $v \not\approx c$),
   kde $(c, D) \in U_\funcs$ pro nějaké $D$,
   odebrat $v$ z $D$.
 % Pravidlo 1a z clanku o SEM:
@@ -455,12 +456,12 @@ Demodulace používá rovnosti, mohli bychom využít i nerovnosti?
 Je-li
 \[
   E = \bigl\{ \func(2, 3) \approx 4,
-              \neg (\func(2, \funcG(5)) \approx 4) \bigr\},
+              \func(2, \funcG(5)) \not\approx 4 \bigr\},
 \]
 pak buňce $\funcG(5)$ nelze přiřadit hodnotu 3. Stejný
 závěr vyvodíme, když prohodíme rovnost s nerovností
 \[
-  E' = \bigl\{ \neg (\func(2, 3) \approx 4),
+  E' = \bigl\{ \func(2, 3) \not\approx 4,
               \func(2, \funcG(5)) \approx 4 \bigr\}
 \]
 nebo když informace $\func(2, 3) = 4$ resp. $\func(2, 3) \neq 4$  bude
@@ -469,8 +470,7 @@ pocházet z $A_\funcs$ resp. $U_\funcs$ místo z $E$ resp. $E'$.
 Obecně, obsahuje-li $E$ podmínky tvaru
 \begin{align*}
 \func(v_1 \comdots v_n) &\approx v, \\
-\neg \bigl(\func(v_1 \comdots v_{i-1}, c, v_{i+1} \comdots  v_n)
-  &\approx v\bigr),
+\func(v_1 \comdots v_{i-1}, c, v_{i+1} \comdots  v_n) &\not\approx v,
 \end{align*}
 kde $v_1 \comdots v_n \in \natZ$, pak odvodíme, že buňka $c$ nemůže
 obsahovat hodnotu $v_i$. Stejný závěr lze učinit, když
@@ -505,7 +505,7 @@ nelze přiřadit hodnotu 0.
 
 % Analogicky můžeme postupovat i u rovností:
 % Obsahuje-li $E$ podmínky tvaru
-% $s \approx s'$ a $\neg (t \approx t')$,
+% $s \approx s'$ a $t \not\approx t'$,
 % pak buňkám nesmíme přiřadit hodnoty, aby $(s = t) \wedge (s' = t')$
 % nebo $(s' = t) \wedge (s = t')$.
 %
@@ -572,15 +572,16 @@ pro zplošťování, která jsme uvedli, obsahuje program Paradox \cite{paradox}
 navíc následující pravidla:
 \begin{itemize}
 \item Klauzuli $\clause$, jenž obsahuje literál $\lit$ tvaru
-  $\neg (\var \approx \varY)$, můžeme upravit tak,
+  $\var \not\approx \varY$, můžeme upravit tak,
   že z ní odstraníme literál $\lit$ a všechny výskyty
   $\var$ nahradíme $\varY$.
 \item Klauzuli $\clause = \lit_1 \vee \cdots \vee \lit_n$, kde literál
   $\lit_i$ je tvaru $\var \approx \varY$ a literál $L_j$ je tvaru
-  $\neg (\term \approx \varY)$ můžeme nahradit klauzulí
+  $\term \not\approx \varY$ můžeme nahradit klauzulí
   $\clause' = \term \approx \var \vee
   \bigvee_{k \in \{ 1 \comdots n \} \setminus \{ i, j \}} \lit_k$, pokud $\clause'$
-  neobsahuje $\varY$.
+  neobsahuje $\varY$. Poznamenejme, že pravidlo rovnež platí,
+  když prohodíme levou a pravou stranu některých rovností anebo nerovností.
 \end{itemize}
 První pravidlo je obsaženo i v článku \cite{claessen03paradox},
 druhé je obsaženo pouze v implementaci.
