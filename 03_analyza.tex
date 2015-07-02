@@ -632,7 +632,8 @@ z $\clauses$ vypadne, musí být k výstupnímu modelu přidán.
 Příkladem transformace, která může vyřadit symboly z $\clauses$,
 je zjednodušování -- odstraňuje klauzule, jenž jsou vždy splněné
 (klauzule obsahující literál $\term \approx \term$ nebo literály
-$\lit$ a $\neg \lit$),
+$\lit$ a $\neg \lit$), odstraňuje klauzule, jenž
+jsou subsumovány jinými klauzulemi,
 a z klauzulí odstraňuje literály, jenž nejsou nikdy splněné
 ($\term \not\approx \term$).},
 který se nevyskytuje v $\clauses$.
@@ -640,6 +641,71 @@ Zkratku můžeme zavést za libovolný term bez proměnných
 a lze s ní nahradit více výskytů daného termu i v různých klauzulích.
 
 \subsection{Rozdělování klauzulí}
+
+Třetí modifikace, která snižuje počty proměnných v klauzulích,
+je rozdělování klauzulí. Na rozdíl od předchozích dvou modifikací
+se používá nejen pro metodu MACE, ale i pro metodu SEM.
+Princip této metody je použít více klauzulí k~nahrazení jedné
+klauzule $\clause \in \clauses$.
+Samozřejmě, každá z nových klauzulí, jimiž nahrazujeme klauzuli $\clause$,
+musí obsahovat méně proměnných než $\clause$.
+
+Začneme příkladem. Rozdělíme klauzuli z $\clauses$
+\[
+\clause = \pred_1(\var) \vee \pred_2(\varY) \vee \pred_3(\var, \varZ)
+\]
+na dvě klauzule s menším množstvím proměnných.
+První dva literály $\clause$ dáme do první klauzule
+a zbylý literál $\clause$ do druhé klauzule:
+\begin{align*}
+  \clause_1 &= \pred(\var) \vee \pred_1(\var) \vee \pred_2(\varY) \\
+  \clause_2 &= \neg \pred(\var) \vee \pred_3(\var, \varZ).
+\end{align*}
+$\pred$ je predikátový symbol, jenž se nevyskytuje v $\clauses$.
+Propojovací literály $\pred(\var)$ a $\neg \pred(\var)$ zajišťují,
+že každý model původní klauzule $\clause$ jde převést na model
+$\clause_1$ a $\clause_2$ rozšířením o vhodnou interpretaci $\pred$.
+Pro převod modelu opačným směrem stačí odstranit interpretaci $\pred$.
+Klauzuli se třemi proměnnými jsme rozdělili na dvě klauzule po dvou
+proměnných. Navíc klauzuli $\clause_1$ můžeme rozdělit
+na dvě klauzule po jedné proměnné.
+
+Obecně můžeme klauzuli $\clause \in \clauses$ s literály
+$\lit_1 \comdots \lit_n$ rozdělit na dvě klauzule
+\begin{align*}
+  \clause_1 &= \pred(\var_1 \comdots \var_n) \vee
+    \lit_1 \vee \cdots \vee \lit_i, \\
+  \clause_2 &= \neg \pred(\var_1 \comdots \var_n) \vee
+    \lit_{i+1} \vee \cdots \vee \lit_n,
+\end{align*}
+kde $\pred$ je predikátový symbol, jenž se nevyskytuje v $\clauses$,
+a $\var_1 \comdots \var_n$ jsou proměnné, jenž se vyskytují v
+$\lit_1 \comdots \lit_i$ a zároveň v $\lit_{i+1} \comdots \lit_n$.
+Rozdělení provádíme pouze v případě, že obě klauzule mají
+méně proměnných než $\clause$.
+
+Otázkou je, jak rozdělit literály původní klauzule $\clause$ mezi
+$\clause_1$ a $\clause_2$. Algoritmus z článku \cite{tammet03}
+od autora programu Gandalf prochází všechny podmnožiny
+proměnných z $\clause$ a pro každou podmnožinu $\vars'$
+zkouší literály z $\clause$ rozdělit do dvou skupin tak,
+aby proměnné sdílené oběma skupinami $\var_1 \comdots \var_n$
+byly právě proměnné z $\vars'$. Podmnožiny jsou procházeny
+v pořadí od nejmenší po největší -- díky tomu algoritmus
+najde podmnožinu minimální velikosti
+a predikátový symbol $\pred$ má minimální aritu.
+
+% Arita není nejmenší, je pouze minimální -- arity jsou posloupnosti
+% a posloupnosti se stejnou délkou jsou neporovnatelné.
+
+Program Paradox \cite{claessen03paradox} používá jiný postup.
+Řekneme, že dvě proměnné jsou v~klauzuli spojené, pokud
+existuje literál v němž se obě vyskytují.
+Paradox hledá proměnnou $\var$, jenž je spojena s minimem proměnných.
+Do klauzule $\clause_1$ dá právě literály obsahující $\var$.
+Rozdělení se provede pouze, pokud $\var$ není spojena se všemi proměnnými
+(kdyby $\var$ byla spojena se všemi proměnnými, klauzule $\clause_1$
+by obsahovala stejný počet proměnných jako $\clause$).
 
 \subsection{Redukce symetrií}
 
