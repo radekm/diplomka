@@ -580,13 +580,64 @@ navíc následující pravidla:
   $\term \not\approx \varY$ můžeme nahradit klauzulí
   $\clause' = \term \approx \var \vee
   \bigvee_{k \in \{ 1 \comdots n \} \setminus \{ i, j \}} \lit_k$, pokud $\clause'$
-  neobsahuje $\varY$. Poznamenejme, že pravidlo rovnež platí,
+  neobsahuje $\varY$. Poznamenejme, že pravidlo rovněž platí,
   když prohodíme levou a pravou stranu některých rovností anebo nerovností.
 \end{itemize}
 První pravidlo je obsaženo i v článku \cite{claessen03paradox},
 druhé je obsaženo pouze v implementaci.
 
 \subsection{Definice termů}
+
+Abychom zploštili klauzuli
+\[
+  \func(\funcG(\funcC)) \approx \var,
+\]
+musíme do ní přidat dvě nové proměnné:
+\[
+  \funcC \not\approx \varZ \vee
+    \funcG(\varZ) \not\approx \varY \vee
+    \func(\varY) \approx \var.
+\]
+Je-li velikost každé domény $n$, pak tato klauzule bude
+zakódována do $n^3$ vý\-ro\-ko\-vých klauzulí o 3 literálech.
+
+Článek \cite{claessen03paradox} ukazuje způsob, jak to udělat
+úsporněji. Pro term $\funcG(\funcC)$ zavedeme zkratku $\funcC'$.
+Původní klauzuli nahradíme klauzulí
+\[
+  \func(\funcC') \approx \var
+\]
+a přidáme klauzuli
+\[
+  \funcC' \approx \funcG(\funcC),
+\]
+která zaručí, že $\funcC'$ je zkratka za $\funcG(\funcC)$.
+Zploštěním těchto klauzulí dostaneme
+\begin{gather*}
+  \funcC' \not\approx \varY \vee \func(\varY) \approx \var, \\
+  \funcC \not\approx \varY \vee
+    \funcG(\varY) \not\approx \var \vee
+    \funcC' \approx \var.
+\end{gather*}
+Počet výrokových klauzulí bude $2 \cdot n^2$ a počet literálů
+$5 \cdot n^2$.
+
+Jako zkratka slouží funkční symbol\footnote{Modely, jenž jsou
+výstupem programu, musí interpretovat právě symboly z původní vstupní množiny
+klauzulí $\clauses$. Pomocné symboly zavedené
+při transformování množiny $\clauses$ jako například zkratka $\funcC'$
+nesmí být součástí výstupních modelů. Naopak, pokud symbol
+z původní vstupní množiny $\clauses$ v důsledku určitých transformací
+z $\clauses$ vypadne, musí být k výstupnímu modelu přidán.
+Příkladem transformace, která může vyřadit symboly z $\clauses$,
+je zjednodušování -- odstraňuje klauzule, jenž jsou vždy splněné
+(klauzule obsahující literál $\term \approx \term$ nebo literály
+$\lit$ a $\neg \lit$),
+a z klauzulí odstraňuje literály, jenž nejsou nikdy splněné
+($\term \not\approx \term$).},
+který se nevyskytuje v $\clauses$.
+Zkratku můžeme zavést za libovolný term bez proměnných
+a lze s ní nahradit více výskytů daného termu i v různých klauzulích.
 
 \subsection{Rozdělování klauzulí}
 
