@@ -1024,3 +1024,55 @@ Omezování velikostí domén tedy použijeme pouze v režimu,
 kdy hledáme jediný model.
 
 \subsection{Inference sort}
+
+Metody MACE a SEM a jejich modifikace podporují vstupy s více než
+jednou sortou. Vstupní množina klauzulí $\clauses$ však obsahuje
+nejvýše jednu sortu. Nyní se podíváme, jak vstupní množinu
+$\clauses$ transformovat
+na množinu $\clauses'$, která potenciálně
+obsahuje více sort než $\clauses$.
+
+Pokud bylo původním úkolem najít model $\clauses$, kde je velikost
+jediné domény $n$, tak nyní budeme hledat model $\clauses'$,
+kde je velikost každé domény $n$. Takový vícesortový
+model snadno převedeme na model jednosortový -- stačí zapomenout,
+že argumenty a hodnoty buněk jsou z různých sort.
+
+Motivací pro $\clauses'$ s více sortami je skutečnost,
+že některé modifikace mají větší šanci omezit prohledávaný prostor,
+když $\clauses'$ obsahuje více sort. Například
+redukce symetrií LNH má k dispozici více nepoužitých hodnot,
+neboť hodnoty z různých domén chápeme jako různé.
+Jiným příkladem je omezování velikosti domén -- velikost původní domény
+nemusí jít omezit, ale velikost některé z nových domén už ano.
+
+Vraťme se k samotnému převodu $\clauses$ na $\clauses'$.
+Používáme techniku z \cite{claessen03paradox}.
+Označme
+\[
+  s = \{ s_{a, n} \mid  a \in \funcs \cup \preds \cup \vars, n \in \nat\}.
+\]
+Množina $\clauses'$ vznikne z množiny $\clauses$ tak, že
+\begin{itemize}
+\item každý funkční symbol $\func$ arity
+  $\langle \sort_1 \comdots \sort_n, \sort \rangle$
+  nahradíme funkčním symbolem $\func'$ arity
+  $\langle [s_{\func, 1}]_E \comdots [s_{\func, n}]_E, [s_{\func, n + 1}]_E \rangle$,
+\item každý predikátový symbol $\pred$ arity
+  $\langle \sort_1 \comdots \sort_n \rangle$
+  nahradíme predikátovým symbolem $\pred'$ arity
+  $\langle [s_{\pred, 1}]_E \comdots [s_{\pred, n}]_E \rangle$
+\item a každou proměnnou $\var \in \vars_\sort$ nahradíme
+  proměnnou $\var' \in \vars_{[s_{\var, 1}]_E}$,
+\end{itemize}
+kde prvky $s_{a, n} \neq s_{a', n'}$ pokud $a \neq a'$ nebo $n \neq n'$
+a kde $E$ je nejjemnější ekvivalence na $s$, že když prvky $s/E$
+ztotožníme se sortami (různým prvkům $s/E$ budou odpovídat různé sorty),
+tak $\clauses'$ bude obsahovat klauzule.
+
+$\clauses'$ by neobsahovala klauzule v případě, že by nesouhlasily
+sorty -- term sorty $\sort$ by byl na pozici,
+kde je vyžadován term sorty $\sort' \neq \sort$. Kdyby $E$ byla ekvivalence
+s jedním blokem, tak by se v $\clauses'$ vyskytovala nejvýše jedna sorta.
+Chceme nejjemnější ekvivalenci, aby se v $\clauses'$ vyskytovalo
+co nejvíce sort. Požadovanou ekvivalenci lze najít algoritmem union-find.
