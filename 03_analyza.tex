@@ -709,6 +709,269 @@ by obsahovala stejný počet proměnných jako $\clause$).
 
 \subsection{Redukce symetrií}
 
+Doposud jsme při hledání jednoho modelu nebo všech neizomorfních modelů
+prozkoumávali všechna možná ohodnocení buněk. Nyní si ukážeme,
+že to není třeba, že prozkoumáním určitých ohodnocení získáme
+informace i o jiných ohodnoceních, která pak prozkoumávat už nemusíme.
+
+Například, když prozkoumáme interpretaci $\interp$,
+nemusíme již prozkoumávat interpretace, které jsou s $\interp$ izomorfní.
+Toto jednoduché pozorování lze zobecnit pro stavy řešeného
+problému.
+Mějme dva stavy řešeného problému z metody SEM
+$(A_\funcs, A_\preds, U_\funcs, U_\preds, E)$
+a $(A_\funcs', A_\preds', U_\funcs', U_\preds', E')$.
+Řekneme, že tyto stavy jsou izomorfní,
+pokud zpermutováním prvků domén\footnote{Buňky v $A_\funcs, A_\preds$
+i podmínky $E$ obsahují prvky domén.
+Pokud máme pro každou doménu permutaci,
+můžeme tyto permutace použít k přejmenování prvků domén,
+jenž se vyskytují $(A_\funcs, A_\preds, E)$.}
+dostaneme z trojice $(A_\funcs, A_\preds, E)$
+trojici $(A_\funcs', A_\preds', E')$.
+Použité permutace tvoří dohromady jednu symetrii.
+Jestliže jsou dva stavy řešeného problému izomorfní,
+získáme jejich prohledáním izomorfní modely.
+
+% Množiny $E$ a $E'$ se nemusí shodovat,
+% stačí, když budou ekvivalentní.
+
+Dalším příkladem jsou symetrické symboly. Uvažme
+množinu klauzulí $\clauses$, která obsahuje
+predikátové symboly $\pred$ a $\pred'$ takové,
+že jejich záměnnou se $\clauses$ nezmění.
+Pokud najdeme model $\clauses$, tak záměnnou interpretací
+$\pred$ a $\pred'$ získáme jiný model $\clauses$, který
+v obecném případě není izomorfní původnímu modelu.
+Toto pozorování lze použít i naopak, například,
+pokud zjistíme, že žádný model neobsahuje nějakou interpretaci pro $\pred$,
+pak automaticky dostaneme, že žádný model neobsahuje tuto interpretaci
+ani pro $\pred'$.
+
+Chceme-li metodu SEM modifikovat, aby neprozkoumávala některá
+ohodnocení, o nichž získá nebo získala informace
+z jiných ohodnocení, máme dvě možnosti:
+\begin{itemize}
+\item Můžeme upravit množinu podmínek $E$ tak,
+  aby některé symetrie přestaly existovat,
+\item nebo upravit funkci \textproc{Search}, aby
+  neprohledávala symetrické stavy.
+\end{itemize}
+První možnosti se říká statická modifikace, neboť
+pracuje pouze na začátku před spuštěním funkce \textproc{Search}.
+Druhé možnosti se říká dynamická modifikace,
+jelikož pracuje za běhu funkce \textproc{Search}.
+
+Statická modifikace u metody MACE upraví výrokové klauzule,
+dynamická modifikace upravuje samotný SAT řešič.
+Nyní popíšeme konkrétní modifikace.
+
+\subsubsection{LNH}
+
+Modifikace LNH \cite{lnh} je založena na následujícím principu:
+Uspořádáme-li všechny buňky funkcí do
+posloupnosti $c_1 \comdots c_n$,
+tak ke každému modelu existuje\footnote{
+Takový model můžeme snadno zkonstruovat. Ohodnocené buňky
+zapíšeme do posloupnosti $c_1 = v_1 \comdots c_n = v_i$.
+Tuto posloupnost procházíme zleva doprava a kdykoliv
+najdeme $c_i = v_i$, kde $v_i$ je nepoužitá hodnota, ale není to nejnižší
+nepoužitá hodnota $v$, tak v celé posloupnosti zaměníme
+$v$ a $v_i$. Tato záměna se nedotkne buněk před $c_i$,
+neboť tam se hodnoty $v$ a $v_i$ nevyskytují. U buňky $c_i$ se změní
+pouze přiřazená hodnota. Záměna však pokazí pořadí buněk po $c_i$,
+pokud se tam $v$ a $v_i$ vyskytují jako argumenty.
+Požadovaný model získáme, až dojdeme na konec posloupnosti.
+Ze záměn můžeme složit permutace, čímž dostaneme izomorfismus modelů.}
+izomorfní model,
+kde je každé buňce $c_i$ přiřazena buď nějaká použitá hodnota
+nebo nejnižší nepoužitá hodnota.
+Mezi použité hodnoty pro buňku $c_i$ patří hodnoty, jenž se vyskytují
+jako argument buněk $c_1 \comdots c_i$, a hodnoty
+přiřazené buňkám $c_1 \comdots c_{i-1}$.
+Pozor, hodnoty z~různých domén chápeme jako různé hodnoty.
+
+Buňka $c_i$ tedy může bez omezení nabývat hodnot, jenž se vyskytují mezi
+argumenty $c_1 \comdots c_i$, a také nejnižší hodnoty $v_1$, která se mezi
+argumenty $c_1 \comdots c_i$ nevyskytuje.
+Jsou-li $v_1 < \cdots < v_{n'}$ hodnoty, jenž jde přiřadit buňce $c_i$
+a jenž se nevyskytují mezi argumenty $c_1 \comdots c_i$, pak
+buňka $c_i$ může obsahovat hodnotu $v_k$ pro $k \ge 2$ pouze tehdy,
+pokud nějaká buňka před $c_i$ obsahuje hodnotu $v_{k-1}$.
+
+Z výše uvedeného vyplývá, jak LNH implementovat jako statickou modifikaci.
+Pro buňku $c_i$ a hodnotu
+$v_k$, kde $k \in \{ 2 \comdots n' \}$, přidáme podmínku tvaru
+\[
+c_i \approx v_k \implies
+  \bigvee_{\substack{
+      j \in \{ 1 \comdots i-1 \}, \\
+      \text{$c_i$ a $c_j$ mají stejnou} \\
+      \text{sortu výsledku}}}
+    c_j \approx v_{k-1}.
+\]
+$c_j$ označuje buňky nalevo od $c_i$, které mají stejnou sortu
+výsledku jako $c_i$, buňky s jinou sortou výsledku
+nabývají hodnot z jiných domén, tudíž by rovnost s $v_{k-1}$
+nemohla nastat.
+
+Díky těmto podmínkám, nemohou některé buňky nabývat určitých hodnot.
+Například, máme-li buňky $\funcC, \func(0, 0), \func(0, 1), \ldots$
+a jednu doménu velikosti 3, pak buňka $\funcC$ může nabývat pouze hodnoty
+0. Důvodem jsou dvě podmínky, které jsme pro ni vytvořili --
+jelikož žádné buňky nejsou nalevo od $\funcC$,
+je pravá strana implikace s předpokladem
+$\funcC = 1$ resp. $\funcC = 2$ prázdná.
+
+Buňka $\func(0, 0)$ může nabývat pouze hodnot 0, 1. Důvodem
+je opět podmínka, kterou jsme pro ni vytvořili:
+\[
+  \func(0, 0) \approx 2 \implies \funcC \approx 1.
+\]
+Pravá strana implikace nikdy neplatí, neboť $\funcC = 0$.
+
+Skutečnosti, že některé buňky nenabývají určitých hodnot,
+můžeme využít v~metodě MACE při generování výrokových klauzulí.
+Jednak pro tyto buňky není třeba generovat některé výrokové proměnné.
+Dále klauzule z bodu 1c) pro tyto buňky mohou obsahovat méně literálů
+a není třeba je odstraňovat při zvětšení domény. Viz také
+\cite{claessen03paradox}.
+
+Velmi důležitou roli hraje pořadí buněk. Například, kdybychom dali
+buňku $\func(0, 1)$ jako první, tj.
+$\func(0, 1), \funcC, \func(0, 0), \ldots$,
+tak by každá buňka mohla nabýt každé hodnoty z domény.
+Výroková klauzule z bodu 1c) pro buňku $\func(0, 1)$
+by však platila i po zvětšení domény na velikost 4 -- klauzuli
+bychom nemuseli odstraňovat.
+
+Pro metodu MACE se LNH obvykle implementuje jako statická modifikace
+-- je to jednodušší než upravovat SAT řešič.
+Na druhé straně pro metodu SEM se LNH obvykle
+implementuje dynamicky -- ve funkci \textproc{Search} stačí nahradit
+
+\medskip
+\begin{algorithmic}
+  \For{$v \in D$}
+    \State \Call{Search}{$A_\funcs \cup \{ (c, v) \}, A_\preds,
+      U_\funcs \setminus \{ (c, D) \}, U_\preds, E$}
+  \EndFor
+\end{algorithmic}
+\medskip
+
+\noindent pomocí (liší se pouze první řádek)
+
+\medskip
+\begin{algorithmic}
+  \For{$v \in D' \cup D'' $}
+    \State \Call{Search}{$A_\funcs \cup \{ (c, v) \}, A_\preds,
+      U_\funcs \setminus \{ (c, D) \}, U_\preds, E$}
+  \EndFor
+\end{algorithmic}
+\medskip
+
+\noindent
+kde $D'$ obsahuje hodnoty z $D$, jenž se vyskytují v $A_\funcs$ nebo
+v argumentech $c$,
+a $D''$ obsahuje nejmenší hodnotu z $D \setminus D'$,
+pokud taková hodnota existuje.
+$D'$ je tedy množina použitých hodnot a $D''$ je buď prázdná množina,
+nebo obsahuje nejmenší nepoužitou hodnotu.
+
+Pořadí buněk pro LNH je tedy dáno pořadím, v němž byly
+buňky ohodnoceny, což znamená, že v různých větvích
+prohledávacího stromu může být různé pořadí buněk pro LNH.
+Abychom mohli omezit výběr hodnot, tj. omezit velikost $D'$,
+je vhodné při výběru neohodnocených buněk z $U_\funcs$
+dávat přednost buňkám, jejichž argumenty se již vyskytují v $A_\funcs$.
+
+
+\subsubsection{XLNH}
+
+Modifikace XLNH \cite{xlnh} redukuje symetrie u problémů
+s funkčním symbolem $\func$ arity $\langle \sort, \sort \rangle$.
+XLNH lze implementovat jako dynamickou modifikaci metody SEM:
+
+Implementace postupně generuje všechna navzájem
+neizomorfní ohodnocení všech buněk
+funkcí bez argumentů a všech buněk funkce $\func^\interp$.
+S každým takovým ohodnocením $A_\funcs$ je pak spuštěna upravená funkce
+\textproc{Search}, která vygeneruje ohodnocení pro zbylé buňky.
+Při ohodnocování zbylých buněk využívá upravená funkce \textproc{Search}
+rozklad $\func^\interp$ na cykly
+k redukci dalších symetrií. Pokud $\func^\interp$ není bijekce,
+použije se její bijektivní restrikce.
+
+Článek \cite{xlnh} jednak ukazuje, jak systematicky
+generovat neizomorfní ohodnocení všech buněk
+funkcí bez argumentů a všech buněk funkce $\func^\interp$.
+Dále ukazuje, jak použít $\func^\interp$ k redukci dalších symetrií.
+
+Na rozdíl od modifikace LNH se XLNH staticky neimplementuje.
+Důvodem je velké množství podmínek resp. výrokových klauzulí,
+jenž by bylo nutné přidat.
+
+\subsubsection{DASH}
+
+Představené modifikace LNH a XLNH nejsou obecně schopny eliminovat všechny
+izomorfní modely. Pokud bychom něčeho takového chtěli dosáhnout
+v metodě SEM, mohli bychom si pamatovat všechny prohledané
+stavy řešeného problému a před prohledáváním nového stavu,
+se podívat, zda již nebyl prohledán izomorfní stav.
+Taková modifikace by vskutku eliminovala veškeré izomorfní modely
+a mohla by tak nahradit modifikace LNH a XLNH -- viz
+\cite{audemard2001symmetry}.
+Problém spočívá v tom, že stavů řešeného problému
+je velmi mnoho, tudíž hledat mezi uloženými stavy izomorfní stav může
+dlouho trvat a navíc se tolik stavů ani nemusí vejít do paměti
+běžného počítače.
+
+S lepším řešením přišli autoři modifikace DASH \cite{dash}.
+Jelikož je na začátku množina podmínek $E$ invariantní
+při zpermutování prvků domén, není třeba tuto množinu uvažovat.
+Buňky, jimž přiřadila hodnoty funkce \textproc{Propagate},
+rovněž není třeba uvažovat, stačí uvažovat pouze buňky,
+jimž přiřadila hodnoty funkce \textproc{Search}.
+A nakonec, není třeba si pamatovat všechny stavy,
+některé stavy jsou redundantní.
+
+Modifikace DASH začíná ohodnocením konstant.
+Konstanty jsou ohodnoceny jako při LNH -- jsou uspořádány do posloupnosti
+a každé je buď přiřazena hodnota použitá nějakou předchozí konstantou,
+nebo nejmenší nepoužitá hodnota. Hodnoty přiřazené konstantám
+nejsou záměnné, ostatní hodnoty jsou záměnné.
+Prohledané stavy reprezentuje DASH schématy. Schéma je množina
+obsahující prvky z $A_\funcs$ a $A_\preds$, jimž byla přiřazena
+hodnota funkcí \textproc{Search}. Před prohledáváním jiného
+stavu\footnote{Po volání \textproc{Propagate} ve funkci \textproc{Search} --
+použití propagace zvyšuje šanci na nalezení schématu, jenž
+stavu odpovídá.}
+s ohodnocením $A'_\funcs$ a $A'_\preds$ se zkusí najít schéma,
+jemuž tento stav odpovídá. Nalezení takového schématu znamená,
+že byl prohledán izomorfní stav řešeného problému, tudíž
+stav s ohodnocením $A'_\funcs$ a $A'_\preds$ prohledávat nemusíme.
+Po prohledání stavu\footnote{Na konci funkce \textproc{Search},
+pokud nenastal konflikt.} přidáme schéma,
+jenž daný stav reprezentuje,
+a odebereme schémata přidaná pro jeho
+podstavy\footnote{Schémata přidaná v rekurzivních voláních pro stavy,
+jenž vznikly z aktuálního stavu.}.
+
+Dvě schémata jsou izomorfní,
+pokud jedno schéma dostaneme z druhého zpermutováním prvků domén mimo
+prvků, jenž byly přiřazeny konstantám.
+Stav s~ohodnocením $A'_\funcs$ a $A'_\preds$ odpovídá schématu, pokud
+prvky nějakého izomorfního schématu leží v množině $A'_\funcs \cup A'_\preds$.
+
+V praxi se ukázalo, že snaha eliminovat všechny izomorfní modely
+metodou DASH se nevyplatí. Proto autoři \cite{dash}
+v závislosti na hloubce rekurze \textproc{Search} omezují,
+jaká schémata se zkouší.
+
+% Hloubka rekurze je hloubka prohledávacího stromu.
+
+DASH se staticky neimplementuje, důvody jsou stejné jako pro XLNH.
+
 \subsection{Inference sort}
 
 \subsection{Omezení velikosti domén}
