@@ -972,6 +972,55 @@ jaká schémata se zkouší.
 
 DASH se staticky neimplementuje, důvody jsou stejné jako pro XLNH.
 
-\subsection{Inference sort}
-
 \subsection{Omezení velikosti domén}
+
+Dalším trikem, jak zmenšit prohledávaný prostor, je omezit velikost
+domén ně\-kte\-rých sort \cite{claessen03paradox}.
+Předpokládejme, že hledáme model, kde $n > k$
+je velikost domény $D_\sort$, všechny použité funkční symboly
+$\funcC_1 \comdots \funcC_k$ se sortou
+výsledku $\sort$ jsou bez argumentů a navíc klauzule neobsahují literál
+tvaru $\term \approx \term'$, kde $\term, \term'$ jsou termy sorty
+$\sort$. Takový model existuje právě tehdy, když
+existuje model, kde doména $D_\sort$ má velikost $k$.
+
+Pokud platí předpoklady, lze doménu $D_\sort$ velikosti
+$n$ zmenšit odebráním hodnot, jenž nejsou přiřazeny žádné z buněk
+$\funcC_1 \comdots \funcC_k$.
+Naopak, když máme model s~doménou $D_\sort$ velikosti $k$,
+jenž obsahuje prvek $v$, můžeme tuto doménu rozšířit o~hodnoty
+$v_1 \comdots v_j$, přičemž hodnotu každé nové buňky $c$ získáme
+tak, že výskyty hodnot $v_1 \comdots v_j$ v argumentech buňky $c$ nahradíme
+hodnotou $v$, čímž dostaneme jinou buňku $c'$, hodnotu $c$
+definujeme jako hodnotu $c'$.
+
+Pozorování můžeme upravit pro případ, kdy klauzule navíc obsahují
+literály $\term \approx \term'$,
+kde $\term, \term'$ jsou termy sorty $\sort$ a alespoň jeden
+z nich není proměnná.
+V~takovém případě model s doménou $D_\sort$ velikosti $n$ existuje
+právě tehdy, když existuje model s doménou $D_\sort$ velikosti $k + 1$.
+
+Rovnosti termů sorty $\sort$ nepředstavují žádný problém při
+zmenšování domény $D_\sort$ z velikosti $n$ na $k + 1$. Při zvětšování domény
+víme, že existuje hodnota $v \in D_\sort$, která není přiřazena žádné z buněk
+$\funcC_1 \comdots \funcC_k$. Klauzule, které obsahují rovnosti
+termů sorty $\sort$, budou splněny i pro hodnoty přidané do domény,
+jelikož jsou splněny i pro hodnotu $v$.
+
+Poznamenejme, že ač je klauzule
+\[
+  \var \approx \funcC
+\]
+ekvivalentní s klauzulí
+\[
+  \var \approx \varY \vee \varY \not\approx \funcC,
+\]
+tak u první klauzule se podaří omezit velikost sorty a u druhé
+klauzule se to nepodaří -- druhá klauzule obsahuje rovnost proměnných.
+Postup, jak model s menší doménou převést na model s větší doménou
+nezaručuje vygenerování všech neizomorfních modelů.
+Omezování velikostí domén tedy použijeme pouze v režimu,
+kdy hledáme jediný model.
+
+\subsection{Inference sort}
