@@ -1050,8 +1050,12 @@ Vraťme se k samotnému převodu $\clauses$ na $\clauses'$.
 Používáme techniku z \cite{claessen03paradox}.
 Označme
 \[
-  s = \{ s_{a, n} \mid  a \in \funcs \cup \preds \cup \vars, n \in \nat\}.
+  s = \{ s_{a, n} \mid  a \in \funcs \cup \preds \cup \vars, n \in \nat\}
 \]
+množinu, kde
+$s_{a, n} \neq s_{a', n'}$, pokud $a \neq a'$ nebo $n \neq n'$.
+Poznamenejme, že prvky množiny $s$ nejsou termy.
+
 Množina $\clauses'$ vznikne z množiny $\clauses$ tak, že
 \begin{itemize}
 \item každý funkční symbol $\func$ arity
@@ -1065,8 +1069,7 @@ Množina $\clauses'$ vznikne z množiny $\clauses$ tak, že
 \item a každou proměnnou $\var \in \vars_\sort$ nahradíme
   proměnnou $\var' \in \vars_{[s_{\var, 1}]_E}$,
 \end{itemize}
-kde prvky $s_{a, n} \neq s_{a', n'}$ pokud $a \neq a'$ nebo $n \neq n'$
-a kde $E$ je nejjemnější ekvivalence na $s$, že když prvky $s/E$
+kde $E$ je nejjemnější ekvivalence na $s$, že když prvky $s/E$
 ztotožníme se sortami (různým prvkům $s/E$ budou odpovídat různé sorty),
 tak $\clauses'$ bude obsahovat klauzule.
 
