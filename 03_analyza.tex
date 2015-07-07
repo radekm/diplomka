@@ -1076,3 +1076,104 @@ kde je vyžadován term sorty $\sort' \neq \sort$. Kdyby $E$ byla ekvivalence
 s jedním blokem, tak by se v $\clauses'$ vyskytovala nejvýše jedna sorta.
 Chceme nejjemnější ekvivalenci, aby se v $\clauses'$ vyskytovalo
 co nejvíce sort. Požadovanou ekvivalenci lze najít algoritmem union-find.
+
+\section{Další metody hledání modelů}
+
+Metody MACE a SEM jsou úspěšné při řešení mnoha praktických problémů
+-- viz například výsledky soutěže CASC \cite{sutcliffe2006casc}.
+Na druhé straně existuje i řada poměrně jednoduchých problémů,
+s nimiž si tyto metody neporadí. Jedním z takových problémů
+je najít model následujících klauzulí:
+\begin{gather*}
+  \func(\var_1 \comdots \var_{128}) \approx \funcC, \\
+  \funcC \not\approx \funcC'.
+\end{gather*}
+Klauzule mají zjevně model s doménou velikosti 2, kde funkce $\func^\interp$
+je konstantní. Metody MACE a SEM však žádný model nenajdou.
+Problém spočívá v explicitní reprezentaci tabulky funkce $\func^\interp$.
+Pro doménu velikosti 2 obsahuje tato tabulka $2^{128}$ buněk,
+takže se ani nevejde do paměti počítače.
+
+Další nepříjemnost metod MACE a SEM uvádí \cite{hillenbrand2013superposition}.
+Mějme tyto klauzule:
+\begin{gather*}
+\func(\var) \approx \var, \\
+\pred(\func(\funcG(\var))).
+\end{gather*}
+V logice prvního řádu, lze
+druhou klauzuli zjednodušit pomocí první klauzule na $\pred(\funcG(\var))$.
+Pokud klauzule transformujeme na podmínky pro SEM, dostaneme:
+\begin{gather*}
+\func(\var) \approx v, \\
+\pred(\func(\funcG(v))),
+\end{gather*}
+kde $v$ je prvek domény, tj. číslo z $\natZ$.
+Pak ovšem podmínky vzešlé z první klauzule již nejde\footnote{Teoreticky
+se  můžeme vrátit k logice prvního řádu a z podmínek
+odvodit první klauzuli. Nicméně nevíme o praktické implementaci
+metody SEM, která by toto dělala.} použít
+ke zjednodušení podmínek z druhé klauzule, důvodem je, že
+$\funcG(v)$ není číslo.
+
+Oba příklady naznačují, že by některé problémy bylo vhodné řešit
+přímo v~logice prvního řádu. Budeme tedy postupovat podobně
+jako u metody MACE, ale místo do výrokové logiky převedeme
+problém do logiky prvního řádu, kde z funkčních symbolů
+jsou pouze symboly bez argumentů \cite{fmdarwin}.
+
+Začneme zploštěním všech klauzulí. Na rozdíl od zploštění,
+jenž jsme popsali pro metodu MACE, budeme navíc požadovat, aby
+rovnost termů byla pouze mezi proměnnými.
+
+Dále všechny funkční symboly nahradíme predikátovými symboly.
+Pro každý funkční symbol $\func$
+vezmeme dosud nepoužitý predikátový symbol
+$\pred_\func$ stejné arity. Každý literál tvaru
+$\func(\var_1 \comdots \var_n) \not\approx \var$
+(resp. $\var \not\approx \func(\var_1 \comdots \var_n)$)
+nahradíme literálem $\neg \pred(\var_1 \comdots \var_n, \var)$.
+
+% Alternativně jde pro každý funkční symboly zavést konstantu,
+% a pro všechny funkční symboly s n argumenty
+% zavést jeden predikátový symbol s n+2 argumenty.
+% Pak f(x1 .. xn) != y nahradíme !P(c, x1 .. xn, y).
+
+Poté pro každý prvek $v$ každé domény $D_\sort$ vezmeme
+dosud nepoužitý funkční symbol $c_{\sort, v}$ arity $\langle \sort \rangle$.
+Pro každé dva funkční symboly $c_{\sort, v} \neq c_{\sort, v'}$
+přidáme klauzuli $c_{\sort, v} \not\approx c_{\sort, v'}$.
+
+% Metoda převádí problém pro dokazovač FM-Darwin, který neumí rovnost,
+% tudíž tam přidává i opračné nerovnosti
+% c_{\sort, v'} \not\approx c_{\sort, v}.
+
+Každá funkce má v každém bodě právě jednu hodnotu -- tento
+invariant garantovaly u metody MACE klauzule přidané v bodech 1b) a 1c).
+Nyní nám stačí garantovat pouze to, že každá \uv{funkce}
+(reprezentovaná relací) má v každém bodě alespoň jednu hodnotu,
+což pro každý funkční symbol $\func$ z původního problému vyjádříme klauzulí
+\begin{equation} \label{eq:totality}
+  \bigvee_{\substack{v \in D_\sort, \\ \text{kde $\sort$ je sorta výsledku $\func$}}}
+    \pred_\func(\var_1 \comdots \var_n, c_{\sort, v}).
+\end{equation}
+Díky tomu, že se $\pred_\func$ ve všech klauzulích kromě
+klauzule (\ref{eq:totality}) vyskytuje pouze v negaci,
+můžeme nalezené modely transformovat tak, že $\pred_\func$
+bude reprezentovat skutečnou funkci.
+
+Jelikož takto zakódovaný problém neobsahuje funkční symboly
+s argumenty, jsou domény Herbrandových interpretací konečné.
+Abychom tedy našli konečný model, stačí problém předat metodě
+pro hledání Herbrandových modelů.
+Popsané kódování používají například programy
+FM-Darwin \cite{fmdarwin}
+a iProver\footnote{Pouze v režimu hledání konečných modelů.} \cite{iprover}.
+
+Samozřejmě metody pro hledání Herbrandových modelů lze použít
+i bez popsaného kódování, pak ovšem nalezené modely nemusí
+mít konečné domény. Rozsáhlý přehled metod automatického dokazování
+v logice prvního řádu za\-lo\-že\-ných na budování
+modelů je \cite{bonacina2015}. Tento přehled mj. zmiňuje
+i metody Model Evolution \cite{modelevolution}
+a Inst-Gen \cite{instgen}, jenž jsou implementovány
+v programech FM-Darwin a iProver.
