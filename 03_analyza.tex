@@ -10,7 +10,7 @@ pro hledání modelů, které jsou obvykle rychlejší
 než metoda generuj a testuj.
 Začneme popisem základních variant metod MACE a SEM,
 poté popíšeme modifikace obou metod.
-Metody MACE a SEM interně pracují s klauzulemi bez proměnných
+Metody MACE a SEM interně pracují s \uv{klauzulemi} bez proměnných
 a interpretace reprezentují explicitně,
 na konci kapitoly pak zmíníme metody, které interně
 pracují s klauzulemi s proměnnými a interpretace reprezentují
@@ -202,7 +202,7 @@ bez podmiňování, nazveme ploché:
 Klauzule je plochá, pokud má každý atom jeden z následujících tvarů
 \begin{itemize}
 \item $\func(\var_1 \comdots \var_n) \approx \varY$
-  (případně $\varY \approx \func(\var_1 \comdots \var_n)$,
+  (případně $\varY \approx \func(\var_1 \comdots \var_n)$),
 \item $\pred(\var_1 \comdots \var_n)$,
 \item nebo $\var \approx \varY$,
 \end{itemize}
@@ -218,7 +218,6 @@ klauzuli $\clause$:
   nahradit novou klauzulí $\term \not\approx \var \vee \clause$.
 \item Je-li $\lit$ literál z $\clause$ tvaru $\term \not\approx \var$
   (resp. $\var \not\approx \term$),
-  že $\term$ neobsahuje $\var$,
   pak můžeme $\clause$ upravit tak, že jeden výskyt $\term$
   mimo $\lit$ nahradíme $\var$.
 \end{itemize}
@@ -259,7 +258,7 @@ Kódujeme-li plochou klauzuli $\clause$ do výrokových klauzulí,
 počet výrokových klauzulí závisí exponenciálně na počtu proměnných
 v $\clause$.
 Nepříjemnou vlastností zplošťování je, že jeho první pravidlo
-zvyšuje počet proměnných v klauzuli. Tato nepříjemnost je hlavní motivací
+zvyšuje počet proměnných v klauzuli. Tato nepříjemnost je motivací
 pro metodu, jenž si nyní představíme.
 
 \subsection{SEM -- základní varianta}
@@ -693,7 +692,7 @@ aby proměnné sdílené oběma skupinami $\var_1 \comdots \var_n$
 byly právě proměnné z $\vars'$. Podmnožiny jsou procházeny
 v pořadí od nejmenší po největší -- díky tomu algoritmus
 najde podmnožinu minimální velikosti
-a predikátový symbol $\pred$ má minimální aritu.
+a predikátový symbol $\pred$ má minimální počet argumentů.
 
 % Arita není nejmenší, je pouze minimální -- arity jsou posloupnosti
 % a posloupnosti se stejnou délkou jsou neporovnatelné.
@@ -875,7 +874,7 @@ kde $D'$ obsahuje hodnoty z $D$, jenž se vyskytují v $A_\funcs$ nebo
 v argumentech $c$,
 a $D''$ obsahuje nejmenší hodnotu z $D \setminus D'$,
 pokud taková hodnota existuje.
-$D'$ je tedy množina použitých hodnot a $D''$ je buď prázdná množina,
+$D'$ je množina použitých hodnot a $D''$ je buď prázdná množina,
 nebo obsahuje nejmenší nepoužitou hodnotu.
 
 Pořadí buněk pro LNH je tedy dáno pořadím, v němž byly
@@ -951,8 +950,8 @@ jemuž tento stav odpovídá. Nalezení takového schématu znamená,
 že byl prohledán izomorfní stav řešeného problému, tudíž
 stav s ohodnocením $A'_\funcs$ a $A'_\preds$ prohledávat nemusíme.
 Po prohledání stavu\footnote{Na konci funkce \textproc{Search},
-pokud nenastal konflikt.} přidáme schéma,
-jenž daný stav reprezentuje,
+ale jen pokud nenastal konflikt, tj. $r \neq \text{\texttt{conflict}}$.}
+přidáme schéma, jenž daný stav reprezentuje,
 a odebereme schémata přidaná pro jeho
 podstavy\footnote{Schémata přidaná v rekurzivních voláních pro stavy,
 jenž vznikly z aktuálního stavu.}.
@@ -1111,12 +1110,20 @@ Pokud klauzule transformujeme na podmínky pro SEM, dostaneme:
 \pred(\func(\funcG(v))),
 \end{gather*}
 kde $v$ je prvek domény, tj. číslo z $\natZ$.
-Pak ovšem podmínky vzešlé z první klauzule již nejde\footnote{Teoreticky
-se  můžeme vrátit k logice prvního řádu a z podmínek
-odvodit první klauzuli. Nicméně nevíme o praktické implementaci
-metody SEM, která by toto dělala.} použít
-ke zjednodušení podmínek z druhé klauzule, důvodem je, že
+Pak ovšem podmínky vzešlé z první klauzule již nejde\footnote{Metodu
+SEM by bylo možné upravit, aby u plně interpretovaných funkcí
+držela informaci, zda jsou konstantní nebo zda
+se vůči nějakému argumentu chovají jako identita.
+Takové funkce by pak bylo možné použít ke zjednodušování množiny
+podmínek $E$.}
+použít ke zjednodušení podmínek z druhé klauzule, důvodem je, že
 $\funcG(v)$ není číslo.
+
+% Implementace SEM by tyto informace počítala průběžně,
+% jak jsou buňky ohodnocovány. Například by pro každý argument držela
+% příznak, zda se funkce v daném argumentu chová jako identita.
+% Když by to nějaké ohodnocení porušilo, příznak by byl nastaven na false,
+% při backtrackingu by byla obnovena původní hodnota příznaku.
 
 Oba příklady naznačují, že by některé problémy bylo vhodné řešit
 přímo v~logice prvního řádu. Budeme tedy postupovat podobně
@@ -1164,6 +1171,8 @@ klauzule (\ref{eq:totality}) vyskytuje pouze v negaci,
 můžeme nalezené modely transformovat tak, že $\pred_\func$
 bude reprezentovat skutečnou funkci.
 
+% Popsané kódování lze rozšířit o analogii LNH.
+
 Jelikož takto zakódovaný problém neobsahuje funkční symboly
 s argumenty, jsou domény Herbrandových interpretací konečné.
 Abychom tedy našli konečný model, stačí problém předat metodě
@@ -1180,3 +1189,5 @@ modelů je \cite{bonacina2015}. Tento přehled mj. zmiňuje
 i metody Model Evolution \cite{modelevolution}
 a Inst-Gen \cite{instgen}, jenž jsou implementovány
 v programech FM-Darwin a iProver.
+
+% TODO Zmínit SGGS?
