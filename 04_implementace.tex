@@ -1,0 +1,43 @@
+\chapter{Implementace}
+
+Cílem této kapitoly je popsat náš hledač konečných modelů, který
+se jmenuje \crossbow. \crossbow{} implementuje metodu MACE
+a některé její modifikace.
+Kromě modifikací obsažených v minulé kapitole jsou implementovány
+i úplně nové, dosud nevyzkoušené, modifikace.
+Tato kapitola začíná popisem nových modifikací metody MACE.
+Poté následuje stručný popis samotné implementace.
+
+Hlavním důvodem, proč jsme se rozhodli založit program
+\crossbow{} právě na metodě MACE,
+byly výsledky metody MACE při řešení problémů --
+například program Paradox \cite{paradox} vyhrál
+6 ročníků soutěže CASC \cite{sutcliffe2006casc}. Další příjemnou vlastností
+metody MACE je, že funguje s existujícími SAT řešiči --
+není třeba vytvářet specializovaný řešič jako u metody SEM.
+
+\section{Další modifikace metody MACE}
+
+\subsection{Zplošťování}
+
+\subsection{Odzplošťování}
+
+\subsection{Redundantní klauzule}
+
+\subsection{Komutativní funkce}
+
+Momentálně se detekují pouze komutativní funkce, symetrické relace nikoliv.
+
+\subsection{Převod pro Gecode}
+
+\subsection{Redundantní podmínky pro Gecode}
+
+\subsection{Hledání všech neizomorfních modelů}
+
+\subsection{SAT řešič s podporou dalších podmínek}
+
+Josat, SAT řešič s podporou funkcí.
+
+\section{Výběr programovacího jazyka}
+
+\section{Architektura programu}
