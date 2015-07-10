@@ -182,6 +182,70 @@ stačila pouze jedna nová proměnná.
 
 \subsection{Odzplošťování}
 
+Jelikož preferujeme klauzule s malým
+počtem proměnných, snažili jsme se náš zplošťovací algoritmus
+navrhnout tak, aby zaváděl co nejmenší množství nových proměnných.
+Ovšem i tak existují klauzule, které jde zploštit lépe.
+Příkladem takové klauzule je (\ref{eq:flatten-bad-output}).
+Tato klauzule již je plochá a náš algoritmus ji nijak nezmění.
+Víme však, že existuje ekvivalentní plochá klauzule,
+jenž obsahuje méně proměnných, tou klauzulí je
+(\ref{eq:flatten-good-output}).
+
+Abychom při vstupu (\ref{eq:flatten-bad-output}) dostali
+výstup (\ref{eq:flatten-good-output}),
+provedeme odzplošťování před zplošťováním.
+Odzplošťování je založeno na stejných pravidlech jako zplošťování
+(viz sekce \ref{sec:mace-basic}).
+Rozdíl je v tom, že odzplošťování používá pravidla naopak:
+\begin{itemize}
+\item Je-li $\lit$ literál z $\clause$ tvaru $\term \not\approx \var$
+  (resp. $\var \not\approx \term$) takový, že $\var$ není obsažena
+  v~$\term$ ani v ostatních literálech $\clause$ mimo $\lit$,
+  pak můžeme literál $\lit$ odstranit\footnote{Ve skutečnosti
+  se nejedná o inverzní pravidlo k prvnímu pravidlu zplošťování.
+  Jednak proto, že při zplošťování se přidávaly literály
+  tvaru $\term \not\approx \var$, nyní se však odebírají i literály tvaru
+  $\var \not\approx \term$. Dále proto, že při zplošťování
+  se přidával literál $\term \not\approx \var$ pouze v případě,
+  kdy se term $\term$ vyskytoval v klauzuli $\clause$.
+  Nyní se literál $\lit$ odstraňuje, i když se term $\term$ v ostatních
+  literálech mimo $\lit$ nevyskytuje.}
+  z~klauzule $\clause$.
+\item Je-li $\lit$ literál z $\clause$ tvaru $\term \not\approx \var$
+  (resp. $\var \not\approx \term$),
+  pak můžeme $\clause$ upravit tak, že jeden výskyt $\var$
+  mimo $\lit$ nahradíme $\term$.
+\end{itemize}
+
+Zkombinováním obou opačných pravidel dostaneme pravidlo odzplošťování:
+\begin{itemize}
+\item Je-li $\lit$ literál z $\clause$ tvaru $\term \not\approx \var$
+  (resp. $\var \not\approx \term$) takový, že $\var$ není obsažena
+  v~$\term$, pak můžeme všechny výskyty $\var$ mimo výskytu
+  v $\lit$ nahradit $\term$
+  a literál $\lit$ odstranit.
+\end{itemize}
+Odzplošťování klauzule $\clause$ se provádí tak,
+že se na ni aplikuje uvedené pravidlo, dokud se klauzule mění.
+
+Například z klauzule (\ref{eq:flatten-bad-output})
+vytvoří odzplošťování klauzuli (\ref{eq:flatten-input}),
+kterou pak zplošťování převede na klauzuli (\ref{eq:flatten-good-output}).
+
+Poznamenejme, že náš algoritmus zplošťování neobsahuje následující pravidlo
+z programu Paradox, jenž jsme uvedli v sekci \ref{sec:flatten-extended}:
+\begin{itemize}
+\item Klauzuli $\clause = \lit_1 \vee \cdots \vee \lit_n$, kde literál
+  $\lit_i$ je tvaru $\var \approx \varY$ a literál $L_j$ je tvaru
+  $\term \not\approx \varY$, můžeme nahradit klauzulí
+  $\clause' = \term \approx \var \vee
+  \bigvee_{k \in \{ 1 \comdots n \} \setminus \{ i, j \}} \lit_k$, pokud $\clause'$
+  neobsahuje $\varY$.
+\end{itemize}
+Místo něj lze totiž použít odzplošťování (term $\term$ neobsahuje
+proměnnou $\varY$) ná\-sle\-do\-va\-né zplošťováním.
+
 \subsection{Redundantní klauzule}
 
 \subsection{Komutativní funkce}

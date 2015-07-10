@@ -78,7 +78,7 @@ právě tehdy, když $(i_1 \comdots i_n) \in \pred^\interp$.
 V dalším textu budeme hledání modelů metodami MACE a SEM chápat jako
 vyplňování tabulek funkcí a relací.
 
-\subsection{MACE -- základní varianta}
+\subsection{MACE -- základní varianta} \label{sec:mace-basic}
 
 Metoda MACE je popsána v \cite{mccune94davis-putnam}.
 Jak jsme již řekli v úvodu, metoda MACE převádí problém na SAT.
@@ -547,7 +547,7 @@ režimu hledání jednoho modelu,
 kdy jsou dána čísla $n \leq n'$ z $\nat$ a hledáme
 model s doménou velikosti $m$, že $n \leq m \leq n'$.
 
-\subsection{Další pravidla pro zplošťování}
+\subsection{Další pravidla pro zplošťování} \label{sec:flatten-extended}
 
 Počet různých proměnných v klauzuli $\clause \in \clauses$
 ovlivňuje, do kolika výrokových klauzulí bude $\clause$
@@ -576,7 +576,7 @@ navíc následující pravidla:
   $\var$ nahradíme $\varY$.
 \item Klauzuli $\clause = \lit_1 \vee \cdots \vee \lit_n$, kde literál
   $\lit_i$ je tvaru $\var \approx \varY$ a literál $L_j$ je tvaru
-  $\term \not\approx \varY$ můžeme nahradit klauzulí
+  $\term \not\approx \varY$, můžeme nahradit klauzulí
   $\clause' = \term \approx \var \vee
   \bigvee_{k \in \{ 1 \comdots n \} \setminus \{ i, j \}} \lit_k$, pokud $\clause'$
   neobsahuje $\varY$. Poznamenejme, že pravidlo rovněž platí,
