@@ -20,6 +20,166 @@ není třeba vytvářet specializovaný řešič jako u metody SEM.
 
 \subsection{Zplošťování}
 
+Jako první popíšeme algoritmus zplošťování používaný
+programem \crossbow. Pravidla pro zplošťování klauzulí
+uvedená v předchozí kapitole lze použít mnoha různými způsoby.
+Například klauzuli
+\begin{equation} \label{eq:flatten-input}
+  \func(\var) \approx \funcC \vee \funcG(\var) \approx \funcC
+\end{equation}
+můžeme zploštit na
+\begin{equation} \label{eq:flatten-bad-output}
+  \func(\var) \not\approx \varY \vee \funcG(\var) \not\approx \varZ \vee
+    \varY \approx \funcC \vee \varZ \approx \funcC
+\end{equation}
+nebo na
+\begin{equation} \label{eq:flatten-good-output}
+  \funcC \not\approx \varY \vee
+    \func(\var) \approx \varY \vee \funcG(\var) \approx \varY.
+\end{equation}
+V prvním případě byly přidány dvě nové proměnné, ve druhém případě
+pouze jedna nová proměnná. Náš algoritmus se pochopitelně snaží
+přidat co nejméně proměnných.
+
+Vstupem algoritmu je klauzule, jenž se má zploštit.
+Výstupem algoritmu je buď plochá klauzule nebo rozhodnutí,
+že se má klauzule odstranit, neboť je vždy splněná.
+
+Algoritmus se skládá ze sedmi kroků, které se, pokud
+není řečeno jinak, vykonávají postupně.
+Každý krok se skládá z předpokladu a akce.
+Akce se provádí pouze v případě, že je splněn předpoklad.
+Pokud není splněn předpoklad, pokračuje se dalším krokem.
+Některé kroky využívají tzv. nové proměnné, což
+jsou proměnné, které se v klauzuli nevyskytovaly
+předtím, než se daný krok začal vykonávat.
+
+{
+\def\assumpt{\textbf{Předpoklad:}}
+\def\action{\textbf{Akce:}}
+\def\goto#1{Dále se pokračuje krokem #1).}
+\begin{itemize}
+\item[1)]
+\assumpt{} Klauzule obsahuje literál $\term \approx \term$ nebo
+literály $\lit$ a $\neg \lit$ nebo literály $t \approx s$
+a $s \not\approx t$.
+
+\action{} Klauzule se odstraní, zplošťování končí.
+
+\item[2)]
+\assumpt{} Klauzule obsahuje literál $\lit$ tvaru $\term \not\approx \term$.
+
+\action{} Literál $\lit$ se odstraní z klauzule.
+\goto{2}
+
+\item[3)]
+\assumpt{} Klauzule obsahuje literál
+$\lit$ tvaru $\var \not\approx \varY$.
+
+\action{} Z klauzule se odstraní literál $\lit$ a všechny
+výskyty $\var$ se nahradí $\varY$.
+\goto{1}
+
+% Musí se pokračovat krokem 1):
+% Máme-li x != y | f(y) = z | f(x) != z, tak zrušením rovnosti proměnných
+% dostaneme $f(y) = z | f(y) != z$.
+
+\item[4)]
+\assumpt{} Klauzule obsahuje literál $\lit$ tvaru
+$\term \not\approx \var$ (resp. $\var \not\approx \term$) a
+$\term$ se vyskytuje mimo $\lit$.
+
+\action{} Všechny výskyty $\term$ mimo výskytu v $\lit$ se nahradí $\var$.
+\goto{1}
+
+% $\term$ má v $\lit$ právě jeden výskyt
+% (díky 3) totiž víme, že $\term$ není proměnná).
+
+\item[5)]
+\assumpt{} Klauzule obsahuje atom
+$\pred(\ldots, \term, \ldots)$ nebo
+$\func(\ldots, \term, \ldots) \approx \termS$
+(resp. $\termS \approx \func(\ldots, \term, \ldots)$),
+kde $\term$ není proměnná.
+
+\action{} Do klauzule se přidá literál $\term \not\approx \var$, kde
+$\var$ je nová proměnná.
+\goto{4}
+
+\item[6)]
+\assumpt{} Klauzule obsahuje literál $\lit$ tvaru
+$\term \not\approx \termS$, kde $\term$ a $\termS$ nejsou
+proměnné.
+
+\action{} Z klauzule se odstraní literál $\lit$ a přidají
+se tam literály $\term \not\approx \var$ a $\var \not\approx \termS$,
+kde $\var$ je nová proměnná.
+\goto{4}
+
+\item[7)]
+Nechť
+$\term_1 \approx \term_2 \comdots \term_{2n-1} \approx \term_{2n}$
+jsou všechny literály z klauzule, jenž mají tvar $\term \approx \termS$,
+kde $\term$ ani $\termS$ nejsou proměnné.
+(Tj. $\term_i$ pro každé $i \in \{ 1 \comdots 2n \}$ není proměnná.)
+
+\assumpt{} $n \ge 1$.
+
+\action{} Vytvoří se neorientovaný graf s vrcholy
+$\term_1 \comdots \term_{2n}$. Mezi vrcholy $\term_i$ a $\term_j$ vede hrana
+právě tehdy, když literál $\term_i \approx \term_j$ je v klauzuli.
+Najde se minimální vrcholové pokrytí $\term_{i_1} \comdots \term_{i_k}$.
+Do klauzule se přidá literál $\term_{i_j} \not\approx \var_j$ pro
+každé $j \in \{ 1 \comdots k \}$, kde $\var_1 \comdots \var_k$ jsou
+navzájem různé nové proměnné.
+\goto{4}
+\end{itemize}
+}
+
+Například u klauzule (\ref{eq:flatten-input}) se v pravidle 7)
+vytvoří graf s vrcholy $\func(\var), \funcC, \funcG(\var)$
+a hranami $\{ \func(\var), \funcC \}$ a $\{ \funcG(\var), \funcC \}$.
+Minimální vrcholové pokrytí tohoto grafu je vrchol $\funcC$,
+proto se do klauzule přidá literál $\funcC \not\approx y$.
+Dále se pokračuje krokem 4), který nahradí výskyty $\funcC$ mimo literál
+$\funcC \not\approx y$, čímž dostaneme klauzuli
+(\ref{eq:flatten-good-output}).
+
+Akci v pravidle 6) bychom mohli změnit tak, že by se literál $\lit$
+neodstraňoval a pouze by se přidal jeden z literálů
+$\term \not\approx \var$, nebo $\var \not\approx \termS$.
+Pravidlo 4) by pak s~pomocí přidaného literálu změnilo literál $\lit$
+na nepřidaný literál.
+
+Všimněme si asymetrie mezi rovností a nerovností neproměnných.
+Pravidlo 6) přidáním jedné nové proměnné získá
+dva literály $\term \not\approx \var$ a $\var \not\approx \termS$,
+které může použít pravidlo 4) k nahrazení termů $\term$ a $\termS$
+proměnnou $\var$.
+
+Na druhé straně pravidlo 7) použité
+na rovnost neproměnných $\term \approx \termS$ přidáním jedné
+nové proměnné získá pouze jeden z literálů $\term \not\approx \var$,
+nebo $\termS \not\approx \var$, které může použít pravidlo 4).
+Abychom získali i druhý literál, museli bychom přidat další novou proměnnou.
+Na rozdíl od pravidla 6) tedy pravidlo 7) musí pečlivě zvažovat,
+zda chce literál pro levou stranu rovnosti, nebo pro pravou stranu
+rovnosti, nebo literály pro obě strany rovnosti.
+
+Například pro zploštění klauzule
+\[
+\funcC \approx \funcC' \vee
+  \funcC \approx \funcC_1 \vee \funcC \approx \funcC_2 \vee
+  \funcC' \approx \funcC'_1 \vee \funcC' \approx \funcC'_2,
+\]
+kde $\funcC, \funcC_1, \funcC_2, \funcC', \funcC'_1, \funcC'_2$ jsou
+funkční symboly bez argumentů, přidá pravidlo 7)
+literály $\funcC \not\approx \var_1$ a $\funcC' \not\approx \var_2$,
+jenž obsahují dvě nové proměnné $x_1$ a $x_2$.
+Kdyby však první literál klauzule byl nerovnost, tj.
+$\funcC \not\approx \funcC'$, tak by pravidlu 6)
+stačila pouze jedna nová proměnná.
+
 \subsection{Odzplošťování}
 
 \subsection{Redundantní klauzule}

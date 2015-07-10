@@ -139,8 +139,10 @@ A nakonec definice $\interp_\beta(\clause)$ pro klauzuli $\clause$:
 Skutečnost, že $\interp_\beta(R) = 1$, kde $R$ je atom, literál nebo klauzule,
 zapisujeme
 \[
-\interp_\beta \models R.
+\interp_\beta \models R
 \]
+a říkáme, že $R$ je splněné v interpretaci $\interp$ při ohodnocení
+proměnných $\beta$.
 Platí-li $\interp_\beta \models R$ pro libovolné $\beta$, říkáme,
 že $\interp$ je model $R$, a píšeme
 \[
@@ -150,6 +152,12 @@ Model $\interp$ je konečný resp. číselný, je-li interpretace
 $\interp$ konečná resp. číselná.
 $\interp$ je model množiny klauzulí $N$,
 pokud je $\interp$ model každé klauzule z $N$.
+$R$ je vždy splněné, pokud je každá interpretace,
+jenž interpretuje sorty a symboly z $R$,
+model $R$. Naopak $R$ není nikdy splněné,
+neexistuje-li interpretace
+$\interp$ a ohodnocení proměnných $\beta$,
+že $R$ je splněné v $\interp$ při $\beta$.
 
 Interpretace $\interp$ a $\interp'$ nad
 $\sorts' \cup \funcs' \cup \preds'$ jsou izomorfní
