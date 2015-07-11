@@ -1092,24 +1092,34 @@ Množina $\clauses'$ vznikne z množiny $\clauses$ tak, že
 \item každý funkční symbol $\func$ arity
   $\langle \sort_1 \comdots \sort_n, \sort \rangle$
   nahradíme funkčním symbolem $\func'$ arity
-  $\langle [s_{\func, 1}]_E \comdots [s_{\func, n}]_E, [s_{\func, n + 1}]_E \rangle$,
+  $\langle \eta(s_{\func, 1}) \comdots \eta(s_{\func, n}),
+  \eta(s_{\func, n + 1}) \rangle$,
 \item každý predikátový symbol $\pred$ arity
   $\langle \sort_1 \comdots \sort_n \rangle$
   nahradíme predikátovým symbolem $\pred'$ arity
-  $\langle [s_{\pred, 1}]_E \comdots [s_{\pred, n}]_E \rangle$
+  $\langle \eta(s_{\pred, 1}) \comdots \eta(s_{\pred, n}) \rangle$
 \item a každou proměnnou $\var \in \vars_\sort$ nahradíme
-  proměnnou $\var' \in \vars_{[s_{\var, 1}]_E}$,
+  proměnnou $\var' \in \vars_{\eta(s_{\var, 1})}$,
 \end{itemize}
-kde $E$ je nejjemnější ekvivalence na $s$, že když prvky $s/E$
-ztotožníme se sortami (různým prvkům $s/E$ budou odpovídat různé sorty),
-tak $\clauses'$ bude obsahovat klauzule.
+kde $\eta: s \to \sorts$ je takové zorazení,
+že $\clauses'$ obsahuje klauzule a pro každé zobrazení $\sigma$
+s touto vlastností platí $\exists \sigma' : \sigma' \circ \eta = \sigma$.
+
+% Podmínka, že pro každé \sigma existuje \sigma',
+% zaručuje, že sort v \clauses' bude co nejvíce.
 
 $\clauses'$ by neobsahovala klauzule v případě, že by nesouhlasily
 sorty -- term sorty $\sort$ by byl na pozici,
-kde je vyžadován term sorty $\sort' \neq \sort$. Kdyby $E$ byla ekvivalence
-s jedním blokem, tak by se v $\clauses'$ vyskytovala nejvýše jedna sorta.
-Chceme nejjemnější ekvivalenci, aby se v $\clauses'$ vyskytovalo
-co nejvíce sort. Požadovanou ekvivalenci lze najít algoritmem union-find.
+kde je vyžadován term sorty $\sort' \neq \sort$.
+Zobrazení $\eta$ není určeno jednoznačně, jeho jádro
+\[
+  E = \ker \eta = \{ (a, a') \in s^2 \mid \eta(a) = \eta(a') \}
+\]
+však ano. Při konstrukci zobrazení $\eta$ můžeme postupovat tak,
+že algoritmem union-find nejprve najdeme jeho jádro $E$
+(ekvivalentní budou jen ty prvky $s$, které ekvivalentní být musí,
+aby souhlasily sorty). Následně pak vezmeme libovolné zobrazení
+$\eta : s \to \sorts$ s jádrem $E$.
 
 \section{Další metody hledání modelů}
 
