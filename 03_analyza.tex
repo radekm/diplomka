@@ -707,6 +707,37 @@ Rozdělení se provede pouze, pokud $\var$ není spojena se všemi proměnnými
 (kdyby $\var$ byla spojena se všemi proměnnými, klauzule $\clause_1$
 by obsahovala stejný počet proměnných jako $\clause$).
 
+% Když rozdělíme klauzuli podle Paradoxu, tak nejde levou klauzuli obsahující
+% proměnnou x, tj. klauzuli C1, již dále rozdělovat.
+%
+% Důkaz:
+%
+% x byla spojena s minimem proměnných (některé jiné proměnné
+% mohly být spojeny se stejným množstvím proměnných jako x).
+%
+% Proměnné, jenž jsou pouze nalevo (včetně x): Jejich spojitost se nezměnila.
+% Důvodem je skutečnost, že všechny literály obsahující tyto proměnné
+% jsou nalevo. Pokud byla proměnná pouze nalevo
+% spojena s jinou proměnnou, byla s ní ve stejném literálu
+% a ten je nyní nalevo, tudíž proměnné jsou stále spojené i v levé klauzuli.
+%
+% Navíc je každá proměnná pouze nalevo spojena se všemi ostatními
+% proměnnými nalevo. Pokud by tomu tak nebylo, byla by spojena
+% s méně proměnnými než x (x je totiž spojena se všemi proměnnými nalevo).
+% Jelikož se spojitost proměnných pouze nalevo nezměnila,
+% byla by taková proměnná spojena s méně proměnnými než x už v původní
+% klauzuli, což je spor.
+%
+% Proměnné, jenž jsou nalevo (v C1) i napravo (v C2), tj. proměnné
+% z průniku: Jsou spojeny navzájem (neboť jsou společně
+% v nově přidaném literálu).
+% Dále jsou spojeny i s proměnnými pouze nalevo, neboť
+% každá proměnná pouze nalevo je spojena se všemi proměnnými nalevo.
+% Tedy proměnné z průniku jsou rovněž spojeny se všemi ostatními
+% proměnnými nalevo.
+%
+% Dohromady máme, že všechny proměnné nalevo jsou spojeny navzájem.
+
 \subsection{Redukce symetrií}
 
 Doposud jsme při hledání jednoho modelu nebo všech neizomorfních modelů
