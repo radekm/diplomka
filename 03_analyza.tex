@@ -1035,7 +1035,11 @@ právě tehdy, když existuje model s doménou $D_\sort$ velikosti $k + 1$.
 Rovnosti termů sorty $\sort$ nepředstavují žádný problém při
 zmenšování domény $D_\sort$ z velikosti $n$ na $k + 1$. Při zvětšování domény
 víme, že existuje hodnota $v \in D_\sort$, která není přiřazena žádné z buněk
-$\funcC_1 \comdots \funcC_k$. Klauzule, které obsahují rovnosti
+$\funcC_1 \comdots \funcC_k$.
+Hodnoty nových buněk definujeme stejným způsobem jako
+u předchozího pozorování, rozdíl je akorát v tom,
+že hodnota $v$ není libovolná hodnota z $D_\sort$.
+Klauzule, které obsahují rovnosti
 termů sorty $\sort$, budou splněny i pro hodnoty přidané do domény,
 jelikož jsou splněny i pro hodnotu $v$.
 
@@ -1101,7 +1105,7 @@ Množina $\clauses'$ vznikne z množiny $\clauses$ tak, že
 \item a každou proměnnou $\var \in \vars_\sort$ nahradíme
   proměnnou $\var' \in \vars_{\eta(s_{\var, 1})}$,
 \end{itemize}
-kde $\eta: s \to \sorts$ je takové zorazení,
+kde $\eta: s \to \sorts$ je takové zobrazení,
 že $\clauses'$ obsahuje klauzule a pro každé zobrazení $\sigma$
 s touto vlastností platí $\exists \sigma' : \sigma' \circ \eta = \sigma$.
 
