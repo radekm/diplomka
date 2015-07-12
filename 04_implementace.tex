@@ -248,6 +248,15 @@ proměnnou $\varY$) ná\-sle\-do\-va\-né zplošťováním.
 
 \subsection{Redundantní klauzule}
 
+Abychom posílili propagaci SAT řešiče, přidáme
+ke vstupní množině klauzulí $\clauses$ další klauzule,
+jenž plynou z $\clauses$.
+
+Program \crossbow{} tyto klauzule získá pomocí dokazovače
+E \cite{eprover18}.
+Z klauzulí odvozených dokazovačem E vybere malé klauzule
+a přidá je do $\clauses$.
+
 \subsection{Komutativní funkce}
 
 Momentálně se detekují pouze komutativní funkce, symetrické relace nikoliv.
