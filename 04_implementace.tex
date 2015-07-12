@@ -259,7 +259,24 @@ a přidá je do $\clauses$.
 
 \subsection{Komutativní funkce}
 
-Momentálně se detekují pouze komutativní funkce, symetrické relace nikoliv.
+Pokud víme, že funkce $\func^\interp$ je komutativní,
+můžeme pro buňky $\func(v_1, v_2)$ a $\func(v_2, v_1)$
+používat stejné výrokové proměnné.
+To znamená, že při vytváření instance SATu (viz \ref{sec:mace-basic})
+budeme v kroku 1) přidávat výrokové proměnné a klauzule pouze
+pro buňky $\func(v_1, v_2)$, kde $v_1 \le v_2$.
+Každou výrokovou proměnnou $A_{\func(v_1, v_2) = v}$, kde $v_1 > v_2$,
+nahradíme proměnnou $A_{\func(v_2, v_1) = v}$.
+
+Program \crossbow{} mezi vstupními klauzulemi a mezi všemi
+klauzulemi z~dokazovače E hledá klauzuli ekvivalentní
+s klauzulí $\func(\var, \varY) \approx \func(\varY, \var)$.
+Pokud takovou klauzuli najde, označí funkci $\func^\interp$
+jako komutativní a při vytváření instance SATu se použije
+optimalizace uvedená v předchozím odstavci.
+
+Podobně bychom mohli postupovat i u symetrických relací,
+to však program \crossbow{} nedělá.
 
 \subsection{Převod pro Gecode}
 
