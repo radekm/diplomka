@@ -280,6 +280,419 @@ to však program \crossbow{} nedělá.
 
 \subsection{Převod pro Gecode}
 
+{
+\def\Eq{\textproc{Eq}}
+\def\LowerEq{\textproc{Lower-Eq}}
+\def\Clause{\textproc{Clause}}
+\def\Element{\textproc{Element}}
+\def\Linear{\textproc{Linear}}
+\def\Precede{\textproc{Precede}}
+
+Chceme-li se vyhnout zplošťování klauzulí a s ním spojenému nárůstu počtu
+proměnných, můžeme klauzule kódovat do bohatšího jazyka, než je SAT.
+Program \crossbow{} umí klauzule kódovat do jazyka
+omezujících podmínek řešiče Gecode \cite{gecode}.
+Při kódování se používají booleovské proměnné, celočíselné proměnné,
+pole booleovských i celočíselných proměnných, celočíselné konstanty
+a jejich pole. Pole jsou indexovány od 0.
+Booleovské proměnné značíme písmenem
+$b$, celočíselné proměnné nebo konstanty značíme písmenem $i$,
+pole booleovských proměnných značíme písmenem $B$
+a pole celočíselných proměnných nebo konstant značíme písmenem $I$.
+Z~podmínek se používají:
+\begin{itemize}
+\item \Eq$(i_1, i_2, b)$. Podmínka je splněna právě tehdy,
+  když $i_1 = i_2 \wedge b = 1$ nebo $i_1 \neq i_2 \wedge b = 0$.
+\item \LowerEq$(i_1, i_2)$. Podmínka je splněna právě tehdy,
+  když $i_1 \le i_2$.
+\item \Clause$(B_P, B_N)$. Podmínka je splněna právě tehdy,
+  když je nějaká booleovská proměnná z $B_P$ ohodnocena 1
+  nebo je nějaká booleovská proměnná z~$B_N$ ohodnocena 0.
+\item \Element$(H, i, h)$, kde $H$ resp. $h$ je buď pole booleovských
+  proměnných resp. booleovská proměnná, nebo pole celočíselných proměnných
+  resp. celo\-číselná proměnná. $i$ je vždy celočíselná proměnná.
+  Podmínka je splněna právě tehdy,
+  když hodnota proměnné v poli $H$ s indexem $i$ je stejná jako
+  hodnota proměnné $h$.
+\item \Linear$(I_c, I_x, i)$, kde $I_c$ a $I_x$ jsou pole stejné délky,
+  $I_c$ je pole konstant, $I_x$ je pole proměnných a $i$ je konstanta.
+  Podmínka je splněna právě tehdy, když
+  \[
+    \sum^{|I_c|-1}_{k=0} I_c(k) \cdot I_x(k) = i.
+  \]
+\item \Precede$(I_x, I_c)$, kde $I_x$ je pole proměnných a
+  $I_c$ je pole konstant. Podmínka je splněna právě tehdy, když
+  pro každé $j \in \{ 0 \comdots |I_x| - 1 \}$ a pro každé
+  $k \in \{ 1 \comdots |I_c| - 1 \}$ platí
+  \[
+    I_x(j) = I_c(k) \implies
+      \exists j' \in \{ 0 \comdots j - 1 \}: I_x(j') = I_c(k - 1).
+  \]
+  Jinak řečeno, kdykoliv má proměnná z $I_x$ hodnotu $i$
+  z $I_c(1 \comdots \star)$, tak v $I_x$ existuje proměnná
+  s nižším indexem a s hodnotou, jenž je v poli $I_c$ těsně před $i$.
+\end{itemize}
+
+Začneme tím, že ukážeme, jak do uvedených podmínek zakódovat
+ploché klauzule. Následně výklad rozšíříme i o neploché klauzule
+a o LNH.
+
+\subsubsection{Ploché klauzule}
+
+Pro zakódování plochých klauzulí stačí podmínky \Eq{} a \Clause{}.
+Napřed pro každou funkci $\func^\interp$ a každou její buňku
+$c \in \cells_\func$ přidáme celočíselnou proměnnou $i_c$
+s doménou $D_\sort$, kde $\sort$ je sorta výsledku $\func$.
+Dále pro každou relaci $\pred^\interp$ a každou její buňku
+$c \in \cells_\pred$ přidáme booleovskou proměnnou $b_c$.
+Při přidávání proměnných pro buňky uplatňuje program \crossbow{}
+trik s komutativními funkcemi.
+
+Nyní přidáme podmínky pro klauzule. Mějme klauzuli
+$\clause \in \clauses$ a ohodnocení proměnných $\beta$.
+Pokud $\clause$ obsahuje literál $\lit$ s atomem $\var \approx \varY$
+takový, že $\lit$ je splněný při ohodnocení $\beta$, tak
+pro klauzuli $\clause$ a ohodnocení $\beta$ žádné podmínky nepřidáváme.
+Dále předpokládejme, že klauzule žádný takový literál neobsahuje.
+Označme $\lit_1 \comdots \lit_j$ všechny literály z klauzule,
+jenž neobsahují atom tvaru $\var \approx \varY$.
+Každému literálu z $\lit_k$ z $\lit_1 \comdots \lit_j$
+přiřadíme booleovskou proměnnou $b_k$:
+\begin{itemize}
+\item Obsahuje-li $\lit_k$ atom tvaru
+  $\func(\var_1 \comdots \var_n) \approx \var$ (resp.
+  $\var \approx \func(\var_1 \comdots \var_n)$),
+  tak $b_k$ bude nová booleovská proměnná
+  a přidáme podmínku
+  \[
+    \Eq(i_{\func(\beta(\var_1) \comdots \beta(\var_n))}, \beta(\var), b_k).
+  \]
+\item Obsahuje-li $\lit_k$ atom tvaru
+  $\pred(\var_1 \comdots \var_n)$, tak $b_k$ bude existující proměnná
+  \[
+    b_{\pred(\beta(\var_1) \comdots \beta(\var_n))}
+  \]
+  a žádnou podmínku nebudeme přidávat.
+\end{itemize}
+Následně přidáme podmínku \Clause$(B_P, B_N)$, kde pole
+proměnných $B_P$ obsahuje právě ty proměnné
+$b_k$, jenž jsou přiřazeny literálům bez negace.
+Naopak pole proměnných $B_N$ obsahuje právě ty proměnné $b_k$,
+jenž jsou přiřazeny literálům s~negací.
+
+Abychom dostali podmínky pro všechny klauzule,
+použijeme uvedený postup na každou klauzuli $\clause \in \clauses$
+se všemi ohodnoceními $\beta$, jenž se liší na proměnných
+v klauzuli $\clause$.
+
+Ukažme si, jak získat podmínky pro klauzuli
+$\pred(\var) \vee \func(\var) \not\approx \varY \vee \var \approx \varY$
+s~jedinou doménou velikosti 2. Uvedený postup musíme
+aplikovat na 4 ohodnocení $\beta_1, \beta_2, \beta_3$ a $\beta_4$,
+která splňují:
+\begin{align*}
+\beta_1(\var) &= 0, & \beta_1(\varY) &= 0, \\
+\beta_2(\var) &= 0, & \beta_2(\varY) &= 1, \\
+\beta_3(\var) &= 1, & \beta_3(\varY) &= 0, \\
+\beta_4(\var) &= 1, & \beta_4(\varY) &= 1.
+\end{align*}
+
+Jelikož je literál $\var \approx \varY$ splněný při ohodnoceních
+$\beta_1$ a $\beta_4$, nebudeme pro tato ohodnocení žádné podmínky přidávat.
+Pro obě zbylá ohodnocení označíme literály, jenž neobsahují
+atom rovnosti:
+\begin{align*}
+\lit_1 &= \pred(\var), \\
+\lit_2 &= \func(\var) \not\approx \varY.
+\end{align*}
+Pro ohodnocení $\beta_2$ přiřadíme literálu $\lit_1$
+existující booleovskou proměnnou $b_{\pred(0)}$, literálu $\lit_2$
+přiřadíme novou booleovskou proměnnou $b_2^{\beta_2}$
+a přidáme podmínku \Eq$(i_{\func(0)}, 1, b_2^{\beta_2})$.
+Nakonec pro ohodnocení $\beta_2$ přidáme podmínku
+\[
+  \Clause([b_{\pred(0)}], [b_2^{\beta_2}]).
+\]
+Pro ohodnocení $\beta_3$ přiřadíme literálu $\lit_1$
+existující booleovskou proměnnou $b_{\pred(1)}$, literálu $\lit_2$
+přiřadíme novou booleovskou proměnnou $b_2^{\beta_3}$
+a přidáme podmínku \Eq$(i_{\func(1)}, 0, b_2^{\beta_3})$.
+Nakonec pro ohodnocení $\beta_3$ přidáme podmínku
+\[
+  \Clause([b_{\pred(1)}], [b_2^{\beta_3}]).
+\]
+Pro klauzuli
+$\pred(\var) \vee \func(\var) \not\approx \varY \vee \var \approx \varY$
+jsme dohromady přidali 4 podmínky.
+
+Pro literály s atomem tvaru
+$\func(\var_1 \comdots \var_n) \approx \var$ (resp.
+$\var \approx \func(\var_1 \comdots \var_n)$), není třeba
+v některých situacích přidávat novou booleovskou proměnnou
+a podmínku. Uvažme například klauzuli
+$\func(\var) \not\approx \var \vee \varY \approx \funcC$
+s jedinou doménou velikosti 2.
+
+Označme literály klauzule
+\begin{align*}
+\lit_1 &= \func(\var) \not\approx \var, \\
+\lit_2 &= \varY \approx \funcC.
+\end{align*}
+Následující tabulka ukazuje proměnné a podmínky,
+jenž je třeba přidat pro oba literály pro ohodnocení
+$\beta_1, \beta_2, \beta_3$ a $\beta_4$:
+
+\begin{center}
+{
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{c|c|c}
+& $\lit_1$ & $\lit_2$ \\
+\hline
+$\beta_1$ &
+  \Eq$(i_{\func(0)}, 0, b_1^{\beta_1})$ &
+  \Eq$(i_{\funcC}, 0, b_2^{\beta_1})$ \\
+$\beta_2$ &
+  \Eq$(i_{\func(0)}, 0, b_1^{\beta_2})$ &
+  \Eq$(i_{\funcC}, 1, b_2^{\beta_2})$ \\
+$\beta_3$ &
+  \Eq$(i_{\func(1)}, 1, b_1^{\beta_3})$ &
+  \Eq$(i_{\funcC}, 0, b_2^{\beta_3})$ \\
+$\beta_4$ &
+  \Eq$(i_{\func(1)}, 1, b_1^{\beta_4})$ &
+  \Eq$(i_{\funcC}, 1, b_2^{\beta_4})$ \\
+\end{tabular}
+}
+\end{center}
+
+Z tabulky je patrné, že pro literál $\lit_1$, pro ohodnocení $\beta_2$
+můžeme použít stejnou proměnnou a podmínku jako pro ohodnocení $\beta_1$.
+Podobně pro ohodnocení $\beta_3$ můžeme použít stejnou
+proměnnou a podmínku jako pro ohodnocení $\beta_4$.
+Pro literál $\lit_2$ můžeme rovněž ušetřit dvě booleovské
+proměnné a dvě podmínky.
+
+\subsubsection{Obecné klauzule}
+
+\def\Horner{\textproc{Horner}}
+
+Pro každý funkční symbol $\func$ arity
+$\langle \sort_1 \comdots \sort_n, \sort \rangle$ přidáme
+pole $I_\func$ celočíselných proměnných. Délka
+pole bude $\prod_{j=1}^n n_{\sort_j}$. Pole bude obsahovat
+proměnné pro buňky funkce $\func^\interp$.
+Proměnná pro buňku $\func(v_1 \comdots v_n) \in \cells_\func$
+bude v poli $I_\func$ pod indexem
+\Horner$(v_1 \comdots v_n, n_{\sort_1} \comdots n_{\sort_n})$.
+Funkce \Horner{} je definována následovně:
+\medskip
+\begin{algorithmic}
+\Function{Horner}{$v_1 \comdots v_n, n_{\sort_1} \comdots n_{\sort_n}$}
+  \State $j \gets 0$
+  \For{$k = 1 \comdots n$}
+    \State $j \gets j \cdot n_{\sort_k} + v_k$
+  \EndFor
+  \State \Return $j$
+\EndFunction
+\end{algorithmic}
+\medskip
+
+\noindent
+Pro každý predikátový symbol $\pred$ arity
+$\langle \sort_1 \comdots \sort_n \rangle$
+přidáme pole $B_\pred$ booleovských proměnných.
+Délka pole bude $\prod_{j=1}^n n_{\sort_j}$. Pole bude obsahovat
+booleovské proměnné pro buňky $\pred^\interp$.
+Proměnná pro buňku $\pred(v_1 \comdots v_n) \in \cells_\pred$
+bude v poli $B_\pred$ pod indexem
+\Horner$(v_1 \comdots v_n, n_{\sort_1} \comdots n_{\sort_n})$.
+
+Díky právě přidaným polím můžeme zakódovat neplochou klauzuli
+$\func(\funcC) \approx \funcC$. Zavedeme pomocnou
+proměnnou $i$ a přidáme podmínku \Element$(I_\func, \funcC, i)$,
+která zajistí, že proměnná $i$ obsahuje hodnotu funkce $\func^\interp$
+v bodě $\funcC^\interp$. Jelikož se tato hodnota musí rovnat hodnotě
+$\funcC^\interp$, přidáme stejně jako v případě plochých klauzulí
+pomocnou booleovskou proměnnou $b$ a podmínku \Eq$(i, i_\funcC, b)$.
+Nakonec přidáme podmínku \Clause$([b], [])$.
+
+Důvodem, proč pro zakódování klauzule potřebujeme pole $I_\func$,
+je, že nevíme, jakou buňku $\func(\funcC)$ přesně označuje
+(v případě plochých klauzulí jsme to věděli), a tudíž
+do podmínky \Eq{} nemůžeme dát proměnnou přímo pro tuto buňku.
+Víme pouze to, že proměnná pro buňku $\func(\funcC)$
+je v poli $I_\func$ a má index $\funcC^\interp$ -- k získání
+její hodnoty použijeme podmínku \Element.
+
+\def\Index{\textproc{Index}}
+\def\TermValue{\textproc{Term-Value}}
+\def\VarForAtom{\textproc{Var-For-Atom}}
+
+V obecném případě budeme potřebovat zjistit, jakou buňku
+označuje term $\func(\term_1 \comdots \term_n)$ resp.
+atom $\pred(\term_1 \comdots \term_n)$ při ohodnocení
+proměnných $\beta$. Před\-po\-klá\-dejme,
+že máme k dispozici funkci \Index{} takovou,
+že volání \Index$(\beta, \term_1 \comdots \term_n)$
+vrátí index proměnné pro buňku $\func(\term_1 \comdots \term_n)$ resp.
+$\pred(\term_1 \comdots \term_n)$ v poli $I_\func$ resp. $B_\pred$
+při ohodnocení $\beta$. Index je buď celočíselná proměnná, nebo
+konstanta. S pomocí funkce \Index{}
+vytvoříme funkce:
+\begin{itemize}
+\item \TermValue$(\beta, \term)$.
+  Vrací celočíselnou proměnnou nebo konstantu
+  s hodnotou termu $\term$ při ohodnocení proměnných $\beta$.
+\item \VarForAtom$(\beta, \atom)$.
+  Vrací booleovskou proměnnou, jenž obsahuje
+  hodnotu atomu $\atom$ při ohodnocení proměnných $\beta$.
+\end{itemize}
+
+Je-li $\term$ term tvaru $\var$,
+funkce \TermValue$(\beta, \term)$ vrátí konstantu
+$\beta(\var)$.
+Je-li $\term$ term tvaru $\func(\term_1 \comdots \term_n)$,
+funkce \TermValue$(\beta, \term)$
+zavolá \Index$(\beta, \term_1 \comdots \term_n)$,
+čímž dostane index do pole $I_\func$.
+Pokud je index konstanta, vrátí funkce proměnnou
+z pole $I_\func$ s daným indexem. V opačném případě je
+index proměnná $i$. Pak funkce \TermValue{}
+zavede novou pomocnou proměnnou $i'$, přidá
+podmínku \Element$(I_\func, i, i')$ a vrátí proměnnou $i'$.
+
+Je-li $\atom$ atom tvaru $\term \approx \termS$,
+\VarForAtom$(\beta, \atom)$
+zavolá \TermValue$(\beta, \term)$
+a \TermValue$(\beta, \termS)$, čímž dostane
+proměnné nebo konstanty $i$ a $i'$ s hodnotami $\term$ a $\termS$.
+Dále \VarForAtom{} zavede novou pomocnou proměnnou $b$,
+přidá podmínku \Eq$(i, i', b)$ a vrátí proměnnou $b$.
+Je-li $\atom$ atom tvaru $\pred(\term_1 \comdots \term_n)$,
+postupuje funkce \VarForAtom$(\beta, \atom)$
+analogicky jako funkce \TermValue{} v případě,
+že term není proměnná.
+
+Funkce \Index$(\beta, \term_1 \comdots \term_n)$
+pro každý term $t_j$, kde $j \in \{ 1 \comdots n \}$ zavolá funkci
+\TermValue$(\beta, t_j)$, čímž dostane proměnné
+nebo konstanty $i_1 \comdots i_n$.
+Mají-li termy $\term_1 \comdots \term_n$ sorty $\sort_1 \comdots \sort_n$,
+pak \Index{} musí vrátit hodnotu
+\Horner$(i_1 \comdots i_n, n_{\sort_1} \comdots n_{\sort_n})$.
+Pokud jsou všechny $i_1 \comdots i_n$ konstanty,
+tak vrácená hodnota bude rovněž konstanta. Pokud je mezi
+$i_1 \comdots i_n$ proměnná, pak funkce \Index{}
+zavede pomocnou proměnnou $i$, pomocí podmínky \Linear{} zajistí,
+že $i$ má hodnotu
+\Horner$(i_1 \comdots i_n, n_{\sort_1} \comdots n_{\sort_n})$,
+a vrátí proměnnou $i$.
+
+Při konstrukci podmínek \Clause{} se literálům přiřadí
+booleovské proměnné vrácené funkcí \VarForAtom.
+
+Převod neploché klauzule do podmínek řešiče Gecode si ukážeme na
+klauzuli $\func(\funcG(\var), \varY, \funcG(\var)) \approx \varY$,
+kde proměnné $\var, \varY$ mají sortu s doménou velikosti 2 a
+sorta výsledku $\funcG$ má doménu velikosti 3.
+
+Začneme s podmínkami pro ohodnocení $\beta_1$. Abychom
+přiřadili booleovskou proměnnou jedinému literálu
+z klauzule, zavoláme funkci \VarForAtom$(\beta_1, \allowbreak
+\func(\funcG(\var), \varY, \funcG(\var)) \approx \varY)$.
+Tato funkce následně zavolá
+\begin{align*}
+&\TermValue(\beta_1, \func(\funcG(\var), \varY, \funcG(\var))) \quad\text{a} \\
+&\TermValue(\beta_1, \varY).
+\end{align*}
+Druhé volání vrátí hodnotu proměnné $\varY$ při ohodnocení $\beta_1$,
+což je konstanta 0. První volání napřed spočte hodnoty
+termů $\var, \funcG(\var), \varY$. Hodnotou termů $\var$ a $\varY$
+je konstanta 0. Hodnota termu $\funcG(\var)$ je nultá proměnná
+z pole $I_\funcG$, tj. $i_{\funcG(0)}$.
+Na základě těchto hodnot musí funkce \Index{} spočítat
+index proměnné v poli $I_\func$, jenž obsahuje hodnotu termu
+$\func(\funcG(\var), \varY, \funcG(\var))$. Víme,
+že hodnota indexu je dána
+\Horner$(i_{\funcG(0)}, 0, i_{\funcG(0)}, 3, 2, 3)$.
+Zavedeme-li pro index novou pomocnou proměnnou $i_1$, pak musí platit
+\[
+  (i_{\funcG(0)} \cdot 2 + 0) \cdot 3 + i_{\funcG(0)} = i_1.
+\]
+Úpravou dostaneme rovnici
+\[
+  7 \cdot i_{\funcG(0)} + (-1) \cdot i_1 = 0,
+\]
+jenž zakódujeme pomocí podmínky \Linear$([i_{\funcG(0)}, i_1], [7, -1], 0)$.
+Funkce \Index{} vrátí proměnnou $i_1$. Funkce \TermValue{}
+zavede novou pomocnou proměnnou $i'_1$ a pomocí podmínky
+\Element$(I_\func, i_1, i'_1)$ zajistí, že $i'_1$ bude obsahovat hodnotu termu
+$\func(\funcG(\var), \varY, \funcG(\var))$. Funkce
+\TermValue$(\beta_1, \func(\funcG(\var), \varY, \funcG(\var)))$
+vrátí proměnou $i'_1$.
+
+Nyní jsme zpět ve funkci \VarForAtom{} a známe hodnoty
+termů na levé a pravé straně. Jelikož se tyto hodnoty
+mají rovnat, přidá \VarForAtom{} novou booleovskou proměnnou $b_1$,
+podmínku \Eq$(i'_1, 0, b_1)$ a vrátí $b_1$.
+Nakonec je přidána podmínka \Clause$([b_1], [])$.
+Stejně lze postupovat pro ohodnocení $\beta_2, \beta_3$ a $\beta_4$.
+
+Pomocné proměnné zavedené pro podmínky \Linear{}, \Element{} a \Eq{}
+lze používat opakovaně (pro podmínky \Eq{} viz konec sekce
+Ploché klauzule).
+
+\subsubsection{LNH}
+
+Redukci symetrií LNH implementujeme prostřednictvím podmínek
+\LowerEq{} a \Precede{}. Popíšeme LNH pro funkční symboly
+se sortou výsledku $\sort$. Před\-po\-klá\-dáme,
+že všechny hodnoty z $D_\sort$ jsou nepoužité.
+
+Buňky funkčních symbolů se sortou výsledku $\sort$
+uspořádáme do posloupnosti.
+Buňky, jenž nemají žádný argument sorty $\sort$, budou
+před buňkami, jenž mají alespoň jeden
+argument sorty $\sort$. Buňky s argumenty sorty $\sort$
+budou uspořádány tak, že je-li buňka $c$
+před buňkou $c'$, tak maximální argument z $D_\sort$ buňky $c$
+není větší než maximální argument z $D_\sort$ buňky $c'$.
+
+Pro buňky funkčních symbolů $c_1 \comdots c_n$,
+jenž nemají argument z $D_\sort$,
+se přidá podmínka
+\[
+\begin{split}
+  \Precede([&i_{c_1} \comdots i_{c_n}], \\
+           [&0 \comdots \min \{ n, n_\sort \} - 1]).
+\end{split}
+\]
+Pro buňky $c'_1 \comdots c'_{n'}$, kde maximální argument z $D_\sort$
+je 0, se přidá podmínka
+\[
+\begin{split}
+  \Precede([&i_{c_1} \comdots i_{c_n}, \\
+            &i_{c'_1} \comdots i_{c'_{n'}}], \\
+           [&1 \comdots \min \{ m + n + n', n_\sort \} - 1]),
+\end{split}
+\]
+kde $m = 0$, pokud $n > 0$, jinak $m = 1$.
+Pro buňky $c''_1 \comdots c''_{n''}$ s maximálním argumentem
+1 se přidá podmínka
+\[
+\begin{split}
+  \Precede([&i_{c_1} \comdots i_{c_n},\\
+            &i_{c'_1} \comdots i_{c'_{n'}},\\
+            &i_{c''_1} \comdots i_{c''_{n''}}], \\
+           [&2 \comdots \min \{ m + n + n' + n'', n_\sort \} - 1]).
+\end{split}
+\]
+Pro buňky, kde je maximální argument z $D_\sort$ vyšší,
+se postupuje analogicky. Podmínka \LowerEq{} se používá
+pro omezování velikosti domén.
+
+}
+
+
 \subsection{Redundantní podmínky pro Gecode}
 
 \subsection{Hledání všech neizomorfních modelů}
