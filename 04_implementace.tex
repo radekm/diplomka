@@ -692,8 +692,19 @@ pro omezování velikosti domén.
 
 }
 
-
 \subsection{Redundantní podmínky pro Gecode}
+
+Abychom posílili propagaci řešiče Gecode, přidáme redundantní
+globální pod\-mín\-ky.
+Mezi vstupními klauzulemi a klauzulemi z dokazovače E
+budeme hledat axiomy grup, kvazigrup a involutorních funkcí.
+Tabulky násobení v grupách a kvazigrupách jsou latinské čtverce,
+pro každý řádek a sloupec takové tabulky přidáme jednu podmínku
+\textproc{All-Different}, jenž vynutí, že daný řádek nebo
+sloupec obsahuje každou hodnotu právě jednou.
+Tabulky involutorních funkcí obsahují každou hodnotu právě jednou,
+pro každou involutorní funkci přidáme jednu podmínku
+\textproc{All-Different}.
 
 \subsection{Hledání všech neizomorfních modelů}
 
