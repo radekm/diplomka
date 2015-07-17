@@ -708,6 +708,99 @@ pro každou involutorní funkci přidáme jednu podmínku
 
 \subsection{Hledání všech neizomorfních modelů}
 
+V této sekci popíšeme, jak najít více modelů a jak odfiltrovat
+izomorfní modely. Řešič Gecode prozkoumává ohodnocení
+proměnných systematicky a snadno tak najde všechna ohodnocení splňující
+zadané podmínky. U SAT řešičů je situace obvykle odlišná,
+proto po nalezení každého modelu přidáme klauzuli,
+která zakáže ohodnocení výrokových proměnných, jenž vedou na daný model.
+Program \crossbow{} přidává klauzuli, jenž pro každou
+funkci z modelu a každou její buňku $c$ s hodnotou $v$
+obsahuje literál $\neg A_{c=v}$ a pro každou relaci z modelu a každou její
+buňku s hodnotou $v$ obsahuje buňku $A_{c=1}$, pokud $v = 0$, nebo
+$\neg A_{c=1}$, pokud $v = 1$.
+
+Nyní dokážeme postupně generovat různé modely.
+LNH v obecném případě však nezabrání situaci,
+že vygenerovaný model je izomorfní jinému modelu, který byl
+vygenerován dříve.
+Abychom tyto izomorfní modely odstranili,
+mohli bychom pro každý nalezený model
+zkusit najít izomorfismus mezi právě nalezeným modelem
+a dříve nalezenými modely.
+Nevýhoda tohoto řešení spočívá v tom,
+že s~rostoucím počtem nalezených modelů bude růst
+i čas potřebný na nalezení izomorfismu.
+
+Jiné řešení je použít zobrazení kanonických reprezentantů pro číselné
+interpretace. Pomocí něj každý číselný model převedeme
+na kanonický číselný model. Díky tomu, že kanonické číselné modely
+jsou izomorfní právě tehdy, když se rovnají, můžeme velmi rychle
+detekovat, zda je nově nalezený model izomorfní již
+dříve nalezenému modelu.
+
+K implementaci zobrazení kanonických reprezentantů
+pro číselné interpretace využijeme implementaci
+zobrazení kanonických reprezentantů pro orientované barevné grafy
+(dále jen grafy). Číselnou interpretaci převedeme na graf,
+ke grafu najdeme kanonický graf a na základě kanonického grafu
+zkonstruujeme kanonickou číselnou interpretaci.
+K nalezení kanonického grafu využívá program
+\crossbow{} knihovnu bliss \cite{bliss}.
+
+Konstrukce grafu z interpretace:
+\begin{itemize}
+\item Pro každou doménu $D_\sort$ vezmeme dosud nepoužitou barvu $i_{D_\sort}$
+  a pro každý prvek domény $v \in D_\sort$ přidáme vrchol $u_v$ barvy
+  $i_{D_\sort}$.
+\item Pro každou relaci $\pred^\interp$ arity
+  $\langle \sort_1 \comdots \sort_n \rangle$, kde $n > 0$
+  vezmeme $n$ dosud nepoužitých barev, označme je
+  $i_1 \comdots i_n$.
+  Pro každou buňku $\pred(v_1 \comdots v_n)$ relace $\pred^\interp$
+  s~hodnotou 1 přidáme nové vrcholy $u_1^\pred \comdots u_n^\pred$,
+  kde vrchol $u_k^\pred$ má barvu $i_k$ pro $k \in \{ 1 \comdots n \}$.
+  Nově přidané vrcholy propojíme hranami $(u_{k-1}^\pred, u_k^\pred)$ pro
+  $k \in \{ 2 \comdots n \}$. Dále propojíme hranami
+  vrcholy pro argumenty s jejich hodnotami, tj. pro
+  každé $k \in \{ 1 \comdots n \}$ přidáme hranu
+  $(u_k^\pred, u_{v_k})$, kde $u_{v_k}$ je vrchol pro hodnotu
+  $v_k$ z domény $D_{\sort_k}$.
+\item Pro každou funkci $\func^\interp$ arity
+  $\langle \sort_1 \comdots \sort_n, \sort_0 \rangle$
+  vezmeme $n + 1$ dosud ne\-pou\-ži\-tých barev, označme je
+  $i_0 \comdots i_n$.
+  Pro každou buňku $\func(v_1 \comdots v_n)$ funkce $\func^\interp$
+  s hodnotou $v_0$ přidáme nové vrcholy $u_0^\func \comdots u_n^\func$,
+  kde vrchol $u_k^\func$ má barvu $i_k$ pro $k \in \{ 0 \comdots n \}$.
+  Nově přidané vrcholy propojíme hranami $(u_{k-1}^\func, u_k^\func)$ pro
+  $k \in \{ 1 \comdots n \}$. Dále propojíme hranami
+  vrcholy pro argumenty a vrchol pro hodnotu buňky s jejich hodnotami, tj. pro
+  každé $k \in \{ 0 \comdots n \}$ přidáme hranu
+  $(u_k^\func, u_{v_k})$, kde $u_{v_k}$ je vrchol pro hodnotu
+  $v_k$ z domény $D_{\sort_k}$.
+\end{itemize}
+Jsou-li dva modely izomorfní, pak\footnote{Nejedná se o ekvivalenci.
+Může nastat situace, že grafy budou izomorfní i pro dva neizomorfní modely.}
+grafy zkonstruované pro tyto modely výše popsaným způsobem budou
+rovněž izomorfní.
+
+% Chceme vlastně normalizovat pořadí prvků v každé doméně.
+% Usporádání prvků v doméně provádíme na základě vztahu
+% prvků k buňkám.
+%
+% Příkladem dvou neizomorfních modelů s izomorfními grafy
+% jsou modely P=0 a P=1, kde P je nulární predikát.
+% Grafy těchto modelů budou obsahovat pouze vrcholy pro prvky
+% domén, žádné hrany.
+
+Společně s kanonickým grafem bliss vydá i bijekci vrcholů,
+jenž dokazuje, že grafy jsou skutečně izomorfní.
+Restrikce této bijekce na vrcholy pro prvky domén
+určuje bijekci na prvcích domén.
+S pomocí této bijekce můžeme přejmenovat prvky
+domén, čímž dostaneme kanonický model.
+
 \subsection{SAT řešič s podporou dalších podmínek}
 
 Josat, SAT řešič s podporou funkcí.
