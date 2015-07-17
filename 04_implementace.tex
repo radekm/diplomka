@@ -803,7 +803,18 @@ domén, čímž dostaneme kanonický model.
 
 \subsection{SAT řešič s podporou dalších podmínek}
 
-Josat, SAT řešič s podporou funkcí.
+Další možností, jak snížit počet proměnných nebo počet klauzulí
+nebo zlepšit propagaci, je rozšířit SAT řešič o další typy podmínek.
+Do SAT řešiče MiniSat 2.2 \cite{minisat} jsme přidali speciální
+typ výrokových klauzulí, které jsou splněny právě tehdy,
+když obsahují právě jeden splněný literál.
+Nový řešič se jmenuje Josat.
+Díky speciálním klauzulím není třeba přidávat klauzule
+z bodu 1b) sekce \ref{sec:mace-basic}.
+
+Aktuální implementace nedovoluje uvnitř speciálních klauzulí užít negaci
+a každá výroková proměnná se může vyskytovat nejvýše v jedné
+speciální klauzuli.
 
 \section{Výběr programovacího jazyka}
 
