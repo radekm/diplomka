@@ -818,4 +818,57 @@ speciální klauzuli.
 
 \section{Výběr programovacího jazyka}
 
+Při výběru programovacího jazyka byly klíčové následující vlastnosti:
+dostatečně velká základna uživatelů,
+automatická správa paměti,
+algebraické datové typy, pattern matching,
+bohatý statický typový systém s typovou inferencí.
+
+Dostatečně velká základna uživatelů bývá zárukou
+rozvoje jazyka a nástrojů s jazykem spjatých.
+Uživatelé jazyka rovněž vytváří tlak
+na zachování zpětné kompatibility.
+
+Automatická správa paměti je důležitá pro modularitu
+programu a usnadňuje sdílení struktur.
+Například i dokazovač E, jenž je napsaný v jazyce C,
+implementuje kvůli sdílení termů
+jednoduchý garbage collector typu Mark \& Sweep.
+
+Algebraické datové typy a pattern matching
+zlepšují čitelnost symbolických výpočtů.
+V hledači modelů \crossbow{}
+se zlepšení čitelnosti týká například kódu, jenž
+hledá axiomy komutativity, grup, kvazigrup a involutorních funkcí,
+nebo kódu, jenž transformuje klauzule.
+
+Bohatý statický typový systém eliminuje některé chyby
+a typové anotace slouží jako dokumentace kódu.
+Na druhé straně nutnost psát typové anotace
+u každé lokální proměnné nebo u každého argumentu funkce
+zhoršuje čitelnost kódu, proto je požadována typová inference.
+
+Výše zmíněné vlastnosti mají programovací jazyky
+Haskell, OCaml, F\# a Scala.
+Jelikož preferujeme striktní vyhodnocování
+a jazyky s vedlejšími efekty, vyřadíme Haskell.
+Jelikož Scala nemá tak dobrou typovou inferenci
+jako OCaml nebo F\#, vyřadíme i Scalu.
+
+% Jazyk s vedlejšími efekty chceme kvůli modularitě a znovupoužitelnosti.
+% Nechceme psát funkce dvakrát -- jako například map a mapM v Haskellu.
+% V OCamlu lze například map přerušit vyhozením výjimky.
+% Rovněž je u striktních jazyků s vedlejšími efekty snazší ladění programů.
+
+Zbývají tedy jazyky OCaml a F\#.
+V obou jazycích jsme vytvořili prototyp
+hledače modelů a na základě prototypů
+jsem vybrali OCaml.
+Prototyp v OCamlu byl pod Linuxem rychlejší než prototyp v F\#.
+Nemalou výhodou OCamlu oproti F\# je systém modulů,
+kde se signatury porovnávají strukturálně,
+zatímco F\# porovnává rozhraní nominálně.
+Strukturální porovnávání představuje velký přínos pro modularitu
+programu.
+
 \section{Architektura programu}
