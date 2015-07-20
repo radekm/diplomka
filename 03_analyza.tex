@@ -48,13 +48,13 @@ s aritou $\langle \sort_1 \comdots \sort_n, \sort \rangle$
 je reprezentována tabulkou o rozměrech $n_{\sort_1} \timdots n_{\sort_n}$,
 kde buňky tabulky obsahují prvky z $D_\sort$.
 \[
-\cells_\func = \bigl\{ \func(i_1 \comdots i_n) \bigm| i_j \in D_{\sort_j},
+\cells_\func = \bigl\{ \func(v_1 \comdots v_n) \bigm| v_j \in D_{\sort_j},
   \text{ kde } j \in \{ 1 \comdots n  \}  \bigr\}
 \]
 je množina buněk tabulky pro funkci $\func^\interp$.
-Buňka $\func(i_1 \comdots i_n)$ obsahuje hodnotu $v$ (zapisujeme
-$\func(i_1 \comdots i_n) = v$) právě tehdy,
-když $\func^\interp(i_1 \comdots i_n) = v$.
+Buňka $\func(v_1 \comdots v_n)$ obsahuje hodnotu $v$ (zapisujeme
+$\func(v_1 \comdots v_n) = v$) právě tehdy,
+když $\func^\interp(v_1 \comdots v_n) = v$.
 
 Relace $\pred^\interp$
 přiřazená predikátovému symbolu $\pred$ s aritou
@@ -62,14 +62,14 @@ $\langle \sort_1 \comdots \sort_n \rangle$
 je reprezentována tabulkou o rozměrech $n_{\sort_1} \timdots n_{\sort_n}$,
 kde buňky tabulky obsahují prvky 0 nebo 1.
 \[
-\cells_\pred = \bigl\{ \pred(i_1 \comdots i_n) \bigm| i_j \in D_{\sort_j},
+\cells_\pred = \bigl\{ \pred(v_1 \comdots v_n) \bigm| v_j \in D_{\sort_j},
   \text{ kde } j \in \{ 1 \comdots n  \}  \bigr\}
 \]
 je množina buněk tabulky pro relaci $\pred^\interp$.
-Fakt, že buňka $\pred(i_1 \comdots i_n)$ obsahuje hodnotu $v$
-zapisujeme $\pred(i_1 \comdots i_n) = v$.
-Buňka $\pred(i_1 \comdots i_n)$ obsahuje hodnotu 1
-právě tehdy, když $(i_1 \comdots i_n) \in \pred^\interp$.
+Fakt, že buňka $\pred(v_1 \comdots v_n)$ obsahuje hodnotu $v$,
+zapisujeme $\pred(v_1 \comdots v_n) = v$.
+Buňka $\pred(v_1 \comdots v_n)$ obsahuje hodnotu 1
+právě tehdy, když $(v_1 \comdots v_n) \in \pred^\interp$.
 
 % Poznámka: Aplikace funkčních resp. predikátových symbolů bez argumentů
 % budeme zapisovat bez prázdných závorek tj. c resp. P
@@ -101,20 +101,20 @@ v \cite{gavanelli2007}.} a relací:
 \begin{itemize}
 \item[1)] Pro každou funkci $\func^\interp$, jejíž tabulku chceme vyplnit:
   \begin{itemize}
-  \item[a)] Pro každou buňku $\func(i_1 \comdots i_n)$ a hodnotu $v$,
+  \item[a)] Pro každou buňku $\func(v_1 \comdots v_n)$ a hodnotu $v$,
     kterou daná buňka může obsahovat, přidáme výrokovou proměnnou
-    $A_{\func(i_1 \comdots i_n) = v}$.
-  \item[b)] Pro každou buňku $\func(i_1 \comdots i_n)$
+    $A_{\func(v_1 \comdots v_n) = v}$.
+  \item[b)] Pro každou buňku $\func(v_1 \comdots v_n)$
     a dvojici hodnot $v < v'$,
     které buňka může obsahovat, přidáme klauzuli
-    $\neg A_{\func(i_1 \comdots i_n) = v} \vee \neg A_{\func(i_1 \comdots i_n) = v'}$.
-  \item[c)] Pro každou buňku $\func(i_1 \comdots i_n)$ a všechny hodnoty
+    $\neg A_{\func(v_1 \comdots v_n) = v} \vee \neg A_{\func(v_1 \comdots v_n) = v'}$.
+  \item[c)] Pro každou buňku $\func(v_1 \comdots v_n)$ a všechny hodnoty
     $0 \comdots v$, jenž může obsahovat, přidáme klauzuli
-    $A_{\func(i_1 \comdots i_n) = 0} \vee \cdots \vee A_{\func(i_1 \comdots i_n) = v}$.
+    $A_{\func(v_1 \comdots v_n) = 0} \vee \cdots \vee A_{\func(v_1 \comdots v_n) = v}$.
   \end{itemize}
 \item[2)] Pro každou relaci $\pred^\interp$, jejíž tabulku chceme vyplnit: Pro
-  každou buňku $\pred(i_1 \comdots i_n)$ přidáme výrokovou proměnnou
-  $A_{\pred(i_1 \comdots i_n) = 1}$.
+  každou buňku $\pred(v_1 \comdots v_n)$ přidáme výrokovou proměnnou
+  $A_{\pred(v_1 \comdots v_n) = 1}$.
 \end{itemize}
 
 Na základě řešení instance SATu můžeme vyplnit tabulky funkcí a relací:
