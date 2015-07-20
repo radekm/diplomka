@@ -872,3 +872,60 @@ Strukturální porovnávání představuje velký přínos pro modularitu
 programu.
 
 \section{Architektura programu}
+
+Program \crossbow{} se skládá ze tří částí.
+První částí je knihovna tptp, která slouží
+pro načítání formulí logiky prvního řádu
+z formátu TPTP \cite{tptpformat} a ukládání formulí logiky prvního řádu
+do formátu TPTP. Tuto knihovnu program \crossbow{} používá
+k načítání vstupu a k ukládání výstupu.
+Knihovnu tptp lze použít i mimo program \crossbow{} -- není
+na něm nijak závislá.
+
+Další částí je knihovna earray, jenž obsahuje pole s oprávněními.
+Na rozdíl od klasických polí z OCamlu, která jde měnit vždy,
+pole s oprávněními mohou být pouze pro čtení.
+Díky tomu můžeme pole s oprávněními použít pro reprezentaci
+neměnných struktur, například termů nebo atomů.
+Jelikož pole s oprávněními nejsou klasická pole,
+nefunguje na nich pattern matching.
+Tuto nepříjemnost knihovna earray řeší pomocí
+syntaktického rozšíření (PPX), které umožní použít
+syntax pattern matchingu pro klasická pole
+i pro pole s oprávněními.
+
+Poslední částí je samotný hledač modelů.
+Ten ke své činnosti využívá SAT řešiče CryptoMiniSat \cite{cryptominisat},
+MiniSat \cite{minisat} a Josat, řešič omezujících podmínek
+Gecode \cite{gecode}, dokazovač E \cite{eprover18} pro klauzifikaci a
+pro generování redundantních klauzulí a knihovnu bliss \cite{bliss}
+pro hledání kanonických grafů.
+
+Před spuštěním SAT řešiče resp. řešiče omezujících podmínek
+vykoná program \crossbow{} standardně následující akce:
+\begin{itemize}
+\item Klauzifikuje vstup, pokud na vstupu nejsou klauzule.
+\item Vygeneruje redundantní klauzule pomocí dokazovače E.
+\item Ve vstupních klauzulích a v klauzulích z dokazovače E
+  najde axiomy komutativity. V případě, že se bude
+  spouštět řešič omezujících podmínek, jsou navíc hledány
+  i axiomy grup, kvazigrup a involutorních funkcí.
+\item Ke vstupním klauzulím přidá malé klauzule z dokazovače E.
+\item Provede odzplošťování.
+\item Definuje termy.
+\item Provede zplošťování, pokud se bude spouštět SAT řešič.
+\item Rozdělí klauzule.
+\item Inferuje sorty.
+\item Vygeneruje výrokové klauzule (včetně klauzulí pro LNH)
+  resp. podmínky (včetně podmínek pro LNH).
+\end{itemize}
+
+SAT řešiče resp. řešiče omezujících podmínek lze snadno přidávat,
+stačí implementovat modul se signaturou \texttt{Sat\_inst.Solver}
+resp. \texttt{Csp\_solver.S}. S pomocí tohoto modulu
+vytvoří funktor \texttt{Sat\_inst.Make} resp. \texttt{Csp\_inst.Make}
+modul, který generuje výrokové klauzule resp. omezující podmínky.
+Důvodem, proč se používá jeden funktor pro SAT řešiče
+a jiný funktor pro řešiče omezujících podmínek, je podpora
+pro opakované použití výrokových klauzulí ve funktoru pro SAT řešiče
+a rozdílná implementace LNH.
