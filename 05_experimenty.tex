@@ -1,0 +1,48 @@
+\chapter{Experimenty}
+
+V této kapitole srovnáme program \crossbow{} s jinými programy
+pro hledání modelů. Srovnání budeme provádět na splnitelných problémech
+s \texttt{cnf} formulemi z~kolekce TPTP 6.1.0 \cite{sutcliffe2009tptp}.
+
+Programy budeme spouštět na počítači s procesorem
+Intel Core i5-3570, ope\-račním systémem openSUSE 13.1 a
+verzí Linuxu 4.1.2. Na vyřešení jednoho problému bude mít
+každý program k dispozici 11 GiB RAM a 2 minuty procesorového
+času\footnote{Procesorový čas na jednotlivých jádrech se sčítá. To
+znamená, že program může vyčerpat časový limit například i za jednu minutu,
+pokud bude po dobu jedné minuty používat dvě jádra procesoru.}.
+
+Program \crossbow{} budeme srovnávat s následujícími programy:
+\begin{itemize}
+\item Mace 4 \cite{mccune03mace4},
+\item Paradox \cite{paradox} (program byl upraven,
+  aby ho bylo možné přeložit GHC 7.6.3),
+\item iProver 1.0 \cite{iprover}.
+\end{itemize}
+Ke kompilaci programů použijeme kompilátory GCC 4.8.1,
+OCaml 4.02.2 a GHC 7.6.3 s knihovnami z Haskell Platform 2013.2.
+
+Pro překlad programu \crossbow{} použijeme následující programy
+a knihovny (dostupné z repozitáře OPAM \cite{opam}):
+\begin{itemize}
+\item batteries 2.3.1,
+\item cmdliner 0.9.7,
+\item menhir 20141215,
+\item ocamlfind 1.5.5,
+\item oclock 0.4.0,
+\item omake 0.9.8.6-0.rc1,
+\item ounit 2.0.0,
+\item pprint 20140424,
+\item ppx\_tools 0.99.2,
+\item sexplib 112.24.01,
+\item sqlite 3.2.0.9,
+\item tptp 0.3.1,
+\item zarith 1.3.
+\end{itemize}
+
+Bohužel v našem srovnání nemáme hledače modelů
+založené na metodách Model Evolution
+a SGGS \cite{bonacina2015}.
+Implementace E-Darwin 1.4 \cite{edarwin} a MELIA 0.1.3 \cite{melia}
+metody Model Evolution se nám totiž nepodařilo zprovoznit
+a o žádné implementaci SGGS nevíme.
