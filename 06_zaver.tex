@@ -1,0 +1,102 @@
+\chapter{Závěr}
+
+V této práci jsme vytvořili hledač konečných modelů \crossbow{},
+který dokáže hledat jeden konečný model nebo všechny navzájem
+neizomorfní konečné modely dané velikosti.
+Implementovali jsme metodu MACE, některé její známé modifikace
+a také několik nových modifikací, jenž, pokud je nám
+známo, dosud nikdo nezkoušel.
+Domníváme se tedy, že zadání diplomové práce bylo splněno.
+
+Ve srovnání s ostatními programy pro hledání modelů si program \crossbow{}
+nevede špatně. Experimenty z minulé kapitoly však naznačují,
+že program implementující metodu z dokazovače iProver společně
+s metodou MACE by si mohl vést ještě lépe\footnote{K volbě
+vhodné metody pro daný problém lze použít strojové učení.}.
+
+Při popisu metod pro hledání modelů jsme kromě metody MACE
+věnovali značnou pozornost i metodě SEM.
+Její implementace, program Mace4, si však v našem experimentálním
+srovnání příliš dobře nevedla. Podle našeho názoru
+je hlavním důvodem absence učení klauzulí.
+Námětem na další práci je tedy implementace metody SEM
+s lepší propagací pro SEM, s učením klauzulí
+a případně i se dvěma sledovanými literály.
+Takto implementovanou metodu SEM můžeme chápat jako krok
+mezi DPLL s učením klauzulí a metodami Model Evolution a SGGS.
+
+% Takto implementovaná metoda SEM bude mít silnější, leč
+% pomalejší, propagaci, než je jednotková propagace v SAT řešičích.
+
+% Idea, jak rozšířit učení klauzulí na SEM, je poměrně triviální
+% (zajímavější je to s efektivní implementací).
+%
+% Při konfliktu máme klauzuli/podmínku, kde jsou všechny literály false.
+% Vezmeme plochou klauzuli (normálně by zploštění přidalo
+% proměnné, jenže my známe hodnoty všech buněk, tudíž můžeme
+% za tyto proměnné dosadit hodnoty tak, že dostaneme plochou klauzuli,
+% jenž má všechny literály false, a rovněž neobsahuje proměnné).
+%
+% Nyní z této ploché klauzule budeme odrezolvovávat buňky
+% z aktuální rozhodovací úrovně -- v pořadí podle stopy (trailu) --
+% dokud tam nezbyde jedna buňka z aktuální RÚ.
+% Předchůdce buňky je klauzule, která vynutila při propagaci její ohodnocení.
+% Například při negativní propagaci z P(0, f(0), f(0)) | C1 a
+% ~P(0, 1, f(0)) | C2, kde C1 a C2 obsahují literály jenž jsou false,
+% je předchůdce ohodnocení f(0) != 1 klauzule
+% f(0) != 1 | C1 | C2. Podobně demodulace se chová jako paramodulace.
+% Například demodulace pomocí f(0) = 1 | C1, kde C1 obsahuje
+% literály, jenž jsou false, musí do demodulované klauzule přidat
+% i literály C1 (jedná se tedy o paramodulaci, která je řízena
+% aktuálním částečným ohodnocením -- provádíme ji pouze, když jsou
+% všechny literály kromě jednoho false). Kdybychom
+% ignorovali C1 nebo C2, tak by naučené klauzule byly
+% platné pouze pro aktuální částečné ohodnocení (nebo jeho rozšíření).
+%
+% S takto získanou klauzulí pak můžeme provést backjump standardním způsobem.
+%
+% Poznamenejme, že u SEMu jsou klauzule, jenž zaručují, že buňka
+% má alespoň jednu hodnotu a nemá dvě nebo více hodnot, implicitní.
+% Při rezoluci si je tedy musíme zkonstruovat.
+%
+% Zplošťovat není třeba celou konfliktní klauzuli, stačí jen
+% buňky, co chceme odrezolvovat. Alternativně bychom místo rezoluce
+% mohli zkusit nějakou jinou metodu, pak by v některých případech
+% zplošťování nemuselo být třeba vůbec.
+
+Při vývoji programu \crossbow{} jsme nepočítali s tím,
+že některé modely budou mít po uložení do formátu TPTP
+velikost několik gigabajtů. To se projevilo zejména v kategorii
+NLP, kde program \crossbow{} některé modely našel,
+ale nestihl je v daném časovém limitu celé vypsat.
+Tuto nepříjemnost můžeme napravit tak, že do
+souborů s modely přestaneme ukládat hodnoty buněk,
+jenž lze odvodit propagací.
+
+% Pokud to nepomůže, můžeme kód pro vypisování
+% modelů, jenž se snaží formule hezky naformátovat,
+% nahradit kódem, který žádné formátování nedělá.
+
+Při návrhu kódování klauzulí do podmínek řešiče Gecode
+jsme se snažili omezit množství a velikost
+podmínek. I přesto řešiči Gecode velmi často docházela paměť.
+Bylo by tedy vhodné přijít s kódováním,
+jenž je paměťově šetrnější.
+Kromě problémů s nedostatkem paměti byl
+řešič Gecode obvykle pomalejší než SAT řešiče.
+K vyšší rychlosti by možná pomohla
+v řešiči Gecode vestavěná redukce symetrií LDSB \cite{ldsb}.
+Bohužel se nám nepodařilo vymyslet způsob,
+jak ji použít, aniž by došlo k nárůstu
+množství proměnných a podmínek.
+
+V našich experimentech měly hledače modelů pouze 2 minuty
+na vyřešení problému. Je otázkou, jak by se změnily
+výsledky, kdybychom časový limit zvedli na několik hodin?
+
+% Hlavní otázkou je, jestli nenastává problém horizontu.
+
+% Další vylepšení lze čerpat ze SAT řešičů, SMT řešičů
+% a řešičů omezujících podmínek.
+% Příkladem je deaktivování naučených kauzulí nebo SEM s teoriemi
+% (například lineární aritmetikou).
