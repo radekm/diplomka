@@ -154,6 +154,9 @@
 \bookmark[page=1,level=0]{Titulní strana}
 \pagestyle{empty}
 
+% Aby stranky s obsahem nemely zobrazena cisla.
+\addtocontents{toc}{\protect\thispagestyle{empty}}
+
 \begin{center}
 
 \large
@@ -283,6 +286,7 @@ TODO
 
 \newpage
 
+% Prvni stranka obsahu.
 \renewcommand\thepage{Obsah}
 \bookmark[page=5,level=0]{Obsah}
 
@@ -292,11 +296,12 @@ TODO
 \@starttoc{toc}
 \makeatother
 
-\pagestyle{plain}
-\thispagestyle{empty}
+% Druha stranka obsahu.
+\renewcommand\thepage{Obsah, pokracovani}
 
 \newpage
 
+\pagestyle{plain}
 \pagenumbering{arabic}
 \setcounter{page}{1}
 
