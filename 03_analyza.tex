@@ -700,7 +700,7 @@ a predikátový symbol $\pred$ má minimální počet argumentů.
 
 Program Paradox \cite{claessen03paradox} používá jiný postup.
 Řekneme, že dvě proměnné jsou v~klauzuli spojené, pokud
-existuje literál v němž se obě vyskytují.
+existuje literál, v němž se obě vyskytují.
 Paradox hledá proměnnou $\var$, jenž je spojena s minimem proměnných.
 Do klauzule $\clause_1$ dá právě literály obsahující $\var$.
 Rozdělení se provede pouze, pokud $\var$ není spojena se všemi proměnnými
@@ -815,7 +815,7 @@ pokud se tam $v$ a $v_i$ vyskytují jako argumenty.
 Požadovaný model získáme, až dojdeme na konec posloupnosti.
 Ze záměn můžeme složit permutace, čímž dostaneme izomorfismus modelů.}
 izomorfní model,
-kde je každé buňce $c_i$ přiřazena buď nějaká použitá hodnota
+kde je každé buňce $c_i$ přiřazena buď nějaká použitá hodnota,
 nebo nejnižší nepoužitá hodnota.
 Mezi použité hodnoty pro buňku $c_i$ patří hodnoty, jenž se vyskytují
 jako argument buněk $c_1 \comdots c_i$, a hodnoty
@@ -975,8 +975,8 @@ Prohledané stavy reprezentuje DASH schématy. Schéma je množina
 obsahující prvky z $A_\funcs$ a $A_\preds$, jimž byla přiřazena
 hodnota funkcí \textproc{Search}. Před prohledáváním jiného
 stavu\footnote{Po volání \textproc{Propagate} ve funkci \textproc{Search} --
-použití propagace zvyšuje šanci na nalezení schématu, jenž
-stavu odpovídá.}
+použití propagace zvyšuje šanci na nalezení schématu, jemuž
+stav odpovídá.}
 s ohodnocením $A'_\funcs$ a $A'_\preds$ se zkusí najít schéma,
 jemuž tento stav odpovídá. Nalezení takového schématu znamená,
 že byl prohledán izomorfní stav řešeného problému, tudíž
@@ -1053,7 +1053,7 @@ ekvivalentní s klauzulí
 \]
 tak u první klauzule se podaří omezit velikost sorty a u druhé
 klauzule se to nepodaří -- druhá klauzule obsahuje rovnost proměnných.
-Postup, jak model s menší doménou převést na model s větší doménou
+Postup, jak model s menší doménou převést na model s větší doménou,
 nezaručuje vygenerování všech neizomorfních modelů.
 Omezování velikostí domén tedy použijeme pouze v režimu,
 kdy hledáme jediný model.
@@ -1152,7 +1152,7 @@ V logice prvního řádu, lze
 druhou klauzuli zjednodušit pomocí první klauzule na $\pred(\funcG(\var))$.
 Pokud klauzule transformujeme na podmínky pro SEM, dostaneme:
 \begin{gather*}
-\func(\var) \approx v, \\
+\func(v) \approx v, \\
 \pred(\func(\funcG(v))),
 \end{gather*}
 kde $v$ je prvek domény, tj. číslo z $\natZ$.
@@ -1200,7 +1200,7 @@ Pro každé dva funkční symboly $c_{\sort, v} \neq c_{\sort, v'}$
 přidáme klauzuli $c_{\sort, v} \not\approx c_{\sort, v'}$.
 
 % Metoda převádí problém pro dokazovač FM-Darwin, který neumí rovnost,
-% tudíž tam přidává i opračné nerovnosti
+% tudíž tam přidává i opačné nerovnosti
 % c_{\sort, v'} \not\approx c_{\sort, v}.
 
 Každá funkce má v každém bodě právě jednu hodnotu -- tento
