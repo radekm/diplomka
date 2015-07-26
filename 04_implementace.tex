@@ -42,7 +42,7 @@ pouze jedna nová proměnná. Náš algoritmus se pochopitelně snaží
 přidat co nejméně proměnných.
 
 Vstupem algoritmu je klauzule, jenž se má zploštit.
-Výstupem algoritmu je buď plochá klauzule nebo rozhodnutí,
+Výstupem algoritmu je buď plochá klauzule, nebo rozhodnutí,
 že se má klauzule odstranit, neboť je vždy splněná.
 
 Algoritmus se skládá ze sedmi kroků, které se, pokud
@@ -508,7 +508,7 @@ bude v poli $B_\pred$ pod indexem
 
 Díky právě přidaným polím můžeme zakódovat neplochou klauzuli
 $\func(\funcC) \approx \funcC$. Zavedeme pomocnou
-proměnnou $i$ a přidáme podmínku \Element$(I_\func, \funcC, i)$,
+proměnnou $i$ a přidáme podmínku \Element$(I_\func, i_\funcC, i)$,
 která zajistí, že proměnná $i$ obsahuje hodnotu funkce $\func^\interp$
 v bodě $\funcC^\interp$. Jelikož se tato hodnota musí rovnat hodnotě
 $\funcC^\interp$, přidáme stejně jako v případě plochých klauzulí
@@ -753,8 +753,8 @@ Konstrukce grafu z interpretace:
 \item Pro každou doménu $D_\sort$ vezmeme dosud nepoužitou barvu $i_{D_\sort}$
   a pro každý prvek domény $v \in D_\sort$ přidáme vrchol $u_v$ barvy
   $i_{D_\sort}$.
-\item Pro každou relaci $\pred^\interp$ arity
-  $\langle \sort_1 \comdots \sort_n \rangle$, kde $n > 0$
+\item Pro každou relaci $\pred^\interp$, kde $\pred$ je arity
+  $\langle \sort_1 \comdots \sort_n \rangle$ a $n > 0$,
   vezmeme $n$ dosud nepoužitých barev, označme je
   $i_1 \comdots i_n$.
   Pro každou buňku $\pred(v_1 \comdots v_n)$ relace $\pred^\interp$
@@ -765,9 +765,9 @@ Konstrukce grafu z interpretace:
   vrcholy pro argumenty s jejich hodnotami, tj. pro
   každé $k \in \{ 1 \comdots n \}$ přidáme hranu
   $(u_k^\pred, u_{v_k})$, kde $u_{v_k}$ je vrchol pro hodnotu
-  $v_k$ z domény $D_{\sort_k}$.
-\item Pro každou funkci $\func^\interp$ arity
-  $\langle \sort_1 \comdots \sort_n, \sort_0 \rangle$
+  $v_k$ z~domény $D_{\sort_k}$.
+\item Pro každou funkci $\func^\interp$, kde $\func$ je arity
+  $\langle \sort_1 \comdots \sort_n, \sort_0 \rangle$,
   vezmeme $n + 1$ dosud ne\-pou\-ži\-tých barev, označme je
   $i_0 \comdots i_n$.
   Pro každou buňku $\func(v_1 \comdots v_n)$ funkce $\func^\interp$
@@ -778,7 +778,7 @@ Konstrukce grafu z interpretace:
   vrcholy pro argumenty a vrchol pro hodnotu buňky s jejich hodnotami, tj. pro
   každé $k \in \{ 0 \comdots n \}$ přidáme hranu
   $(u_k^\func, u_{v_k})$, kde $u_{v_k}$ je vrchol pro hodnotu
-  $v_k$ z domény $D_{\sort_k}$.
+  $v_k$ z~domény $D_{\sort_k}$.
 \end{itemize}
 Jsou-li dva modely izomorfní, pak\footnote{Nejedná se o ekvivalenci.
 Může nastat situace, že grafy budou izomorfní i pro dva neizomorfní modely.}
@@ -869,7 +869,7 @@ jako OCaml nebo F\#, vyřadíme i Scalu.
 Zbývají tedy jazyky OCaml a F\#.
 V obou jazycích jsme vytvořili prototyp
 hledače modelů a na základě prototypů
-jsem vybrali OCaml.
+jsme vybrali OCaml.
 Prototyp v OCamlu byl pod Linuxem rychlejší než prototyp v F\#.
 Nemalou výhodou OCamlu oproti F\# je systém modulů,
 kde se signatury porovnávají strukturálně,
