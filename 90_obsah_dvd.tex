@@ -1,0 +1,51 @@
+
+\chapter{Obsah DVD}
+
+Součástí práce je i DVD obsahující:
+\begin{itemize}
+\item Text této práce ve formátu PDF (soubor \texttt{dipl.pdf}).
+\item Zdrojový kód tohoto textu v \LaTeX u (archiv \texttt{dipl.zip}).
+\item Zdrojový kód programu \crossbow{} (archiv \texttt{crossbow.zip}).
+\item Zdrojový kód knihovny tptp (archiv \texttt{tptp.zip}).
+\item Zdrojový kód dalších programů a knihoven (adresář \texttt{dalsi}):
+  \begin{itemize}
+  \item archiv \texttt{folkung.tar.gz} obsahuje původní verzi
+    programu Paradox staženou ze stránek autora \cite{paradox},
+  \item archiv \texttt{paradox.zip} obsahuje modifikovanou verzi
+    programu Paradox, kterou lze přeložit s GHC 7.6.3,
+  \item archiv \texttt{opam-mini-repository.tar.gz} obsahuje
+    závislosti potřebné ke kompilaci programu \crossbow{} a knihovny tptp
+    (doporučujeme však instalovat závislosti z oficiálního
+    repozitáře OPAM \cite{opam}),
+  \item archiv \texttt{bow.zip} obsahuje
+    náš prototyp hledače modelů v jazyce F\#, \dots
+  \end{itemize}
+\item Zkompilované programy (archiv \texttt{kompilovane.zip}).
+\item Problém \texttt{model-evolution/prob.p}, na němž nefungují
+  hledače modelů E-Darwin 1.4 a MELIA 0.1.3 implementující metodu
+  Model Evolution. Instrukce pro spouštění hledačů modelů jsou uloženy
+  přímo v problému.
+\item Programy a skripty pro realizaci experimentů (adresář \texttt{mereni}):
+  \begin{itemize}
+  \item v podadresáři \texttt{problems} jsou seznamy problémů
+    z databáze TPTP, na nichž byly experimenty prováděny,
+  \item ke spouštění hledačů modelů byl použit skript
+    \texttt{run\_all\_provers} -- obsahuje parametry, s nimiž byly
+    hledače modelů spouštěny, \dots
+  \end{itemize}
+\item Modely nalezené při experimentech (adresář \texttt{modely}).
+\item Podrobné výsledky experimentů (adresář \texttt{vysledky}):
+  \begin{itemize}
+  \item Shrnutí ve formátu PDF. Soubory, jejichž název má
+    prefix \texttt{sum\_times}, obsahují podrobné výsledky
+    pro jednotlivé problémy. Tabulky v těchto souborech obsahují časy
+    v sekundách potřebné na nalezení modelu. Pro nevyřešené problémy
+    je v tabulce jedno z písmen \uv{č} (došel čas), \uv{p} (došla paměť),
+    \uv{x} (jiný problém). Podrobnější informace lze získat
+    v~některých PDF prohlížečích umístěním ukazatele myši
+    nad počet sekund nebo písmeno.
+  \item SQLite 3 databáze \texttt{REPORT} obsahuje výsledky, z nichž
+    jsou vygenerována shrnutí ve formátu PDF.
+  \end{itemize}
+\item Problémy použité pro experimenty (archiv \texttt{TPTP-v6.1.0.tgz}).
+\end{itemize}
