@@ -14,7 +14,40 @@ nevede špatně. Experimenty z minulé kapitoly však naznačují,
 s metodou MACE by si mohl vést ještě lépe\footnote{K volbě
 vhodné metody pro daný problém lze použít strojové učení.}.
 
-Při popisu metod pro hledání modelů jsme kromě metody MACE
+Řada modifikací metody MACE neměla v našem experimentálním
+srovnání prakticky žádný efekt. To se týká nejen nově představených
+modifikací jako odzplošťování a přidávání redundantních klauzulí,
+ale i dříve známých modifikací jako definic termů nebo inference sort
+(inference sort výrazně pomohla pouze řešiči Gecode v kategorii NLP).
+Naopak velký přínos měla již dříve známá modifikace rozdělování klauzulí.
+
+I přesto, že jsme se při návrhu kódování klauzulí
+do podmínek řešiče Gecode snažili omezit množství a velikost podmínek,
+spotřebovával řešič Gecode více paměti než SAT řešiče.
+Bylo by tedy vhodné přijít s kódováním,
+jenž je paměťově šetrnější.
+Kromě problémů se spotřebou paměti byl
+řešič Gecode obvykle i pomalejší než SAT řešiče.
+K vyšší rychlosti by možná pomohla
+v řešiči Gecode vestavěná redukce symetrií LDSB \cite{ldsb}.
+Bohužel se nám nepodařilo vymyslet způsob,
+jak ji použít, aniž by došlo k nárůstu
+množství proměnných a podmínek.
+
+Při vývoji programu \crossbow{} jsme nepočítali s tím,
+že některé modely budou mít po uložení do formátu TPTP
+velikost několik gigabajtů. To se projevilo zejména v kategorii
+NLP, kde program \crossbow{} některé modely našel,
+ale nestihl je v daném časovém limitu celé vypsat.
+Tuto nepříjemnost můžeme napravit tak, že do
+souborů s modely přestaneme ukládat hodnoty buněk,
+jenž lze odvodit propagací.
+
+% Pokud to nepomůže, můžeme kód pro vypisování
+% modelů, jenž se snaží formule hezky naformátovat,
+% nahradit kódem, který žádné formátování nedělá.
+
+Kromě metody MACE jsme
 věnovali značnou pozornost i metodě SEM.
 Její implementace, program Mace4, si však v našem experimentálním
 srovnání příliš dobře nevedla. Podle našeho názoru
@@ -64,36 +97,12 @@ mezi DPLL s učením klauzulí a metodami Model Evolution a SGGS.
 % mohli zkusit nějakou jinou metodu, pak by v některých případech
 % zplošťování nemuselo být třeba vůbec.
 
-Při vývoji programu \crossbow{} jsme nepočítali s tím,
-že některé modely budou mít po uložení do formátu TPTP
-velikost několik gigabajtů. To se projevilo zejména v kategorii
-NLP, kde program \crossbow{} některé modely našel,
-ale nestihl je v daném časovém limitu celé vypsat.
-Tuto nepříjemnost můžeme napravit tak, že do
-souborů s modely přestaneme ukládat hodnoty buněk,
-jenž lze odvodit propagací.
 
-% Pokud to nepomůže, můžeme kód pro vypisování
-% modelů, jenž se snaží formule hezky naformátovat,
-% nahradit kódem, který žádné formátování nedělá.
 
-Při návrhu kódování klauzulí do podmínek řešiče Gecode
-jsme se snažili omezit množství a velikost
-podmínek. I přesto řešiči Gecode velmi často docházela paměť.
-Bylo by tedy vhodné přijít s kódováním,
-jenž je paměťově šetrnější.
-Kromě problémů s nedostatkem paměti byl
-řešič Gecode obvykle pomalejší než SAT řešiče.
-K vyšší rychlosti by možná pomohla
-v řešiči Gecode vestavěná redukce symetrií LDSB \cite{ldsb}.
-Bohužel se nám nepodařilo vymyslet způsob,
-jak ji použít, aniž by došlo k nárůstu
-množství proměnných a podmínek.
-
-V našich experimentech měly hledače modelů pouze 2 minuty
-na vyřešení problému. Je otázkou, jak by se změnily
-výsledky, kdybychom časový limit zvedli na několik hodin?
-
+% V našich experimentech měly hledače modelů pouze 2 minuty
+% na vyřešení problému. Je otázkou, jak by se změnily
+% výsledky, kdybychom časový limit zvedli na několik hodin?
+%
 % Hlavní otázkou je, jestli nenastává problém horizontu.
 
 % Další vylepšení lze čerpat ze SAT řešičů, SMT řešičů
