@@ -12,4 +12,4 @@ all:
 
 clean:
 	rm -f *.pdf *.log *.aux *.xml *.bbl *.bcf *.blg \
-	    *.glg *.glo *.gls *.ist *.toc
+	    *.glg *.glo *.gls *.ist *.toc *.upa *.upb

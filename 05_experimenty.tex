@@ -14,7 +14,8 @@ pokud bude po dobu jedné minuty používat dvě jádra procesoru.}.
 
 Program \crossbow{} budeme srovnávat s následujícími programy:
 \begin{itemize}
-\item Mace4 \cite{mccune03mace4},
+\item Mace4\footnote{Program Mace4 neumí hledat
+  konečné modely s velikostí domény 1.} \cite{mccune03mace4},
 \item Paradox \cite{paradox} (program byl upraven,
   aby ho bylo možné přeložit GHC 7.6.3),
 \item iProver 1.0 \cite{iprover}.
@@ -46,3 +47,157 @@ a SGGS \cite{bonacina2015}.
 Implementace E-Darwin 1.4 \cite{edarwin} a MELIA 0.1.3 \cite{melia}
 metody Model Evolution se nám totiž nepodařilo zprovoznit
 a o žádné implementaci SGGS nevíme.
+
+\bigskip
+Nyní budeme prezentovat výsledky našeho srovnání.
+Začneme tabulkou, jenž obsahuje počty vyřešených problémů.
+V prvním sloupci tabulky jsou názvy kategorií problémů
+z kolekce TPTP. Kategorie, kde bylo ostře méně než 10
+splnitelných problémů, byly sloučeny pod položku \uv{Ostatní}.
+První řádek tabulky obsahuje názvy konfigurací\footnote{Soubor
+\texttt{mereni/run\_all\_provers} na přiloženém DVD obsahuje
+přesné parametry, s nimiž byly hledače modelů spouštěny.}
+hledačů modelů. Pro cizí programy jsou názvy konfigurací:
+\begin{itemize}
+\item Mace. Program Mace4.
+\item Paradox. Program Paradox.
+\item iProver. Program iProver, hledání modelů.
+\item iProver/Fin. Program iProver, hledání konečných modelů.
+\end{itemize}
+Ostatní názvy konfigurací značí program \crossbow{}.
+Použitý řešič se pozná z prefixu názvu konfigurace (CMSat značí
+CryptoMiniSat). Pokud název konfigurace končí řetězcem \uv{+E},
+znamená to, že byl po dobu 5 sekund spuštěn dokazovač E za účelem
+generování redundantních klauzulí. V opačném případě nebyl dokazovač E
+spuštěn vůbec.
+
+\newcommand\summary[1]{\noindent
+\begin{minipage}{1.0\textwidth}
+\begin{center}
+\include{#1}
+\end{center}
+\end{minipage}}
+
+\newpage
+
+Tabulka s počty vyřešených problémů:
+
+\summary{sum_counts}
+
+Jak je vidět, nejlépe si vedl program \crossbow{} s řešičem MiniSat
+a se zapnutým generováním redundantních klauzulí.
+Všimněme si, že program \crossbow{} vý\-raz\-něji zaostává
+pouze na problémech z kategorií NLP a SYN.
+Důvodem je velikost explicitně reprezentovaných modelů. Modely z těchto
+kategorií mají při vypsání programem \crossbow{} do formátu TPTP
+velikost i několik gigabajtů. Například Josat našel
+v kategorii NLP více modelů než iProver, jenže
+modely problémů 75, 82-93 nestihl celé vypsat.
+Tyto problémy také ukazují výhody řešiče Josat --
+řešiči MiniSat došla paměť, zatímco řešič Josat dokázal modely najít.
+Domníváme se, že výhody řešiče Josat by se projevily ještě více,
+kdyby modely problémů měly větší domény.
+
+Zklamáním je naopak řešič Gecode. Je pomalejší a spotřebovává více
+paměti než SAT řešiče. Důvodem jsou pravděpodobně použité podmínky
+--  SAT řešiče pracují s klauzulemi efektivněji než Gecode.
+
+\newpage
+
+Nyní se podíváme na graf ukazující vývoj počtu vyřešených problémů
+v čase:
+
+\summary{sum_plot}
+
+Z grafu je patrné, že iProver po jedné minutě zkouší jinou metodu.
+Od osmdesáté sekundy se počet vyřešených problémů mění pouze velmi
+mírně -- nezdá se, že by zvýšení časového limitu dramaticky změnilo
+výsledky.
+
+\newpage
+
+Gecode podporuje jak ploché, tak i neploché klauzule.
+Následující tabulka ukazuje, že kvůli kategorii LAT\footnote{Důvodem
+jsou klauzule, jejichž zploštění způsobí výrazný nárůst počtu proměnných.}
+je lepší nezplošťovat:
+
+\summary{sum_countsF}
+
+Gecode+E označuje konfiguraci bez zplošťování,
+Gecode-F+E označuje konfiguraci se zplošťováním.
+
+\newpage
+
+Některé modifikace lze v programu \crossbow{} deaktivovat.
+Díky tomu můžeme zkoumat, jaký přínos tyto modifikace mají.
+Zde jsou výsledky pro definice termů:
+
+\summary{sum_countsNDef}
+
+Řetězec NDef v názvu konfigurace značí, že
+definice termů nebyly použity. Pro řešič MiniSat
+je největší přínos v kategorii LAT, důvodem
+jsou opět klauzule, jejichž zploštění způsobí
+výrazný nárůst počtu proměnných.
+Díky opakovanému používání pomocných proměnných zavedených
+pro podmínky \Linear{}, \Element{}, \Eq{}
+a faktu, že Gecode+E nezplošťuje, nemá řešič Gecode
+s kategorií LAT obtíže, i když jsou definice termů vypnuté.
+
+\newpage
+
+Ukazuje se, že detekce axiomů komutativity,
+grup, kvazigrup a involutorních funkcí nemá prakticky
+žádný přínos:
+
+\summary{sum_countsNDet}
+
+Řetězec NDet v názvu konfigurace značí, že
+detekce axiomů nebyla použita.
+
+\newpage
+
+Odzplošťování nemá na problémy z kolekce TPTP vůbec žádný efekt:
+
+\summary{sum_countsNU}
+
+Řetězec NU v názvu konfigurace značí, že
+odzplošťování nebylo použito.
+
+\newpage
+
+Na rozdíl od předešlých dvou modifikací je přínos
+rozdělování klauzulí značný:
+
+\summary{sum_countsNS}
+
+Řetězec NS v názvu konfigurace značí, že
+rozdělování klauzulí nebylo použito.
+Jelikož řešiči Gecode dáváme neploché klauzule,
+není přínos rozdělování klauzulí tak výrazný.
+
+% Zplošťování přidává nové proměnné -- bez zplošťování
+% se rozdělování klauzulí nemůže tolik projevit.
+
+\newpage
+
+Nakonec se podíváme, jaký přínos má inference sort:
+
+\summary{sum_countsNSI}
+
+Řetězec NSI v názvu konfigurace značí, že
+inference sort nebyla použita.
+Inference sort má výrazný přínos
+pouze v kategorii NLP pro řešič Gecode.
+Bohužel neznáme přesné důvody\footnote{Jelikož
+problémy z kategorie NLP obsahují značné množství
+funkčních symbolů, je možným důvodem
+velikost podmínek přidaných LNH pro Gecode.
+S větším množstvím sort (u některých problémů z kategorie NLP
+lze inferovat stovky sort)
+klesá velikost těchto podmínek.},
+proč tomu tak je.
+
+% Alternativně: Může být přínos způsoben blokováním LNH?
+% Tj. LNH se u některých sort vůbec neprovádí
+% kvůli předpokladu, že všechny hodnoty z $D_\sort$ jsou nepoužité.
